@@ -45,9 +45,10 @@
             this.addNewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ofdOpenProgram = new System.Windows.Forms.OpenFileDialog();
             this.ofdAddFont = new System.Windows.Forms.OpenFileDialog();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiRemoveProgram = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -94,7 +95,6 @@
             this.tlpMainGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tlpMainGrid.AutoSize = true;
-            this.tlpMainGrid.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tlpMainGrid.ColumnCount = 1;
             this.tlpMainGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tlpMainGrid.Controls.Add(this.gbFonts, 0, 0);
@@ -159,6 +159,8 @@
             // 
             // gbAggressiveFocus
             // 
+            this.gbAggressiveFocus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbAggressiveFocus.Controls.Add(this.nudAggressiveFocus);
             this.gbAggressiveFocus.Controls.Add(this.label1);
             this.gbAggressiveFocus.Controls.Add(this.cbAggressiveFocus);
@@ -216,6 +218,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addNewToolStripMenuItem,
+            this.tsmiRemoveProgram,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -241,6 +244,13 @@
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
             // ofdOpenProgram
             // 
             this.ofdOpenProgram.Filter = "Program|*.exe";
@@ -249,12 +259,13 @@
             // 
             this.ofdAddFont.Multiselect = true;
             // 
-            // aboutToolStripMenuItem
+            // tsmiRemoveProgram
             // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.aboutToolStripMenuItem.Text = "&About";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            this.tsmiRemoveProgram.Enabled = false;
+            this.tsmiRemoveProgram.Name = "tsmiRemoveProgram";
+            this.tsmiRemoveProgram.Size = new System.Drawing.Size(152, 22);
+            this.tsmiRemoveProgram.Text = "&Remove";
+            this.tsmiRemoveProgram.Click += new System.EventHandler(this.tsmiRemoveProgram_Click);
             // 
             // EditForm
             // 
@@ -263,7 +274,7 @@
             this.ClientSize = new System.Drawing.Size(684, 312);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
-            this.Icon = Properties.Resources.GameLaunchProxy;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(700, 350);
             this.Name = "EditForm";
@@ -306,6 +317,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbAggressiveFocus;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsmiRemoveProgram;
     }
 }
 

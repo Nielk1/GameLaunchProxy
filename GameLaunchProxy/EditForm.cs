@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,6 +20,7 @@ namespace GameLaunchProxy
 
         Settings settings;
 
+        string selectedKey;
         ProgramSettings selectedItem;
 
         int FontGroupHeight = 100;
@@ -28,6 +30,8 @@ namespace GameLaunchProxy
         public EditForm()
         {
             InitializeComponent();
+
+            this.Text = String.Format("{0} ({1})", this.Text, Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
             FontGroupHeight = gbFonts.Height;
 
@@ -99,12 +103,14 @@ namespace GameLaunchProxy
             if (_selectedItem != null && settings.Programs.ContainsKey(_selectedItem))
             {
                 selectedItem = settings.Programs[_selectedItem];
+                selectedKey = _selectedItem;
                 UpdateFontList();
                 UpdateAggressiveFocus();
             }
             else
             {
                 selectedItem = null;
+                selectedKey = null;
                 UpdateFontList();
                 UpdateAggressiveFocus();
             }
@@ -113,6 +119,8 @@ namespace GameLaunchProxy
             {
                 lbFont.Items.Clear();
                 selectedItem.Fonts.ForEach(dr => lbFont.Items.Add(dr));
+
+                tsmiRemoveProgram.Enabled = true;
 
                 // fonts
                 lbFont.Enabled = true;
@@ -125,6 +133,8 @@ namespace GameLaunchProxy
             else
             {
                 lbFont.Items.Clear();
+
+                tsmiRemoveProgram.Enabled = false;
 
                 // fonts
                 lbFont.Enabled = false;
@@ -225,6 +235,17 @@ namespace GameLaunchProxy
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             about.ShowDialog();
+        }
+
+        private void tsmiRemoveProgram_Click(object sender, EventArgs e)
+        {
+            if(selectedItem != null)
+            {
+                settings.Programs.Remove(selectedKey);
+                SaveSettings();
+                UpdateList();
+                LoadItem(null);
+            }
         }
     }
 }

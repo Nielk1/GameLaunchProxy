@@ -63,15 +63,6 @@
     <Compile Include="EditForm.Designer.cs">
       <DependentUpon>EditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MultiPanel\Design\MultiPanelDesigner.cs" />
-    <Compile Include="MultiPanel\Design\MultiPanelPageDesigner.cs" />
-    <Compile Include="MultiPanel\MultiPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MultiPanel\MultiPanelPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MultiPanel\MultiPanelPagesCollection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -112,10 +103,13 @@
     <None Include="Resources\Proxy_128.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MultiPanel\multipanel.ico" />
+    <None Include="Resources\GameLaunchProxy.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\GameLaunchProxy.ico" />
+    <ProjectReference Include="..\Liron.Windows.Forms\Liron.Windows.Forms.csproj">
+      <Project>{1eb31359-e7f5-42ed-8794-49f53e1a9cf1}</Project>
+      <Name>Liron.Windows.Forms</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
