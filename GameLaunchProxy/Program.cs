@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,14 +35,49 @@ namespace GameLaunchProxy
             Restore = 9, ShowDefault = 10, ForceMinimized = 11
         };
 
+        delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+        [DllImport("user32.dll")]
+        static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+        public struct Rect
+        {
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Right { get; set; }
+            public int Bottom { get; set; }
+        }
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
         [DllImport("user32.dll")]
         public static extern int SetForegroundWindow(IntPtr hwnd);
 
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, int wParam, StringBuilder lParam);
+
+        
+        const uint WM_GETTEXT    = 0x000D;
 
         // unique id for global mutex - Global prefix means it is global to the machine
         const string mutex_id = "Global\\{0C497414-1C8C-4E44-9A29-01E80B9B6556}";
 
         static string instanceID;
+
+
+
+
+
+
+        struct WindowData
+        {
+            public Process proc;
+            public IntPtr win;
+            public Rect rec;
+        }
+
 
         /// <summary>
         /// The main entry point for the application.
@@ -136,6 +172,18 @@ namespace GameLaunchProxy
                                 steamProxyHold = true;
                             }
 
+                            bool startBigPicture = false;
+                            if (args.Contains("-steamproxyforcebigpicture"))
+                            {
+                                startBigPicture = true;
+                            }
+
+                            bool endBigPicture = false;
+                            if (args.Contains("-steamproxyclosebigpicture"))
+                            {
+                                endBigPicture = true;
+                            }
+
                             // need to be sure we have a working ID
                             if (ProxyID != null && ProxyID.Length > 0)
                             {
@@ -159,6 +207,8 @@ namespace GameLaunchProxy
                                     }
                                     argCounter++;
                                     if (arg == "-steamproxyhold") return null;
+                                    if (arg == "-steamproxyforcebigpicture") return null;
+                                    if (arg == "-steamproxyclosebigpicture") return null;
                                     return arg;
                                 }).Where(arg => arg != null).ToList();
 
@@ -170,7 +220,7 @@ namespace GameLaunchProxy
                                         string cleanromname = Path.GetFileNameWithoutExtension(argList.Last().Trim('"'));
                                         while (newShortcutName.Contains("%cleanromname%"))
                                         {
-                                            newShortcutName.Replace("%cleanromname%", cleanromname);
+                                            newShortcutName = newShortcutName.Replace("%cleanromname%", cleanromname);
                                         }
                                     }
                                 }
@@ -209,13 +259,20 @@ namespace GameLaunchProxy
                                     File.WriteAllText("steamproxy.data",
                                         argList[0] + "\r\n" + // program name
                                         string.Join(" ", argList.Skip(1)) + "\r\n" + // arguments
-                                        steamShortcutId + "\r\n");
+                                        steamShortcutId + "\r\n" +
+                                        endBigPicture.ToString());
 
                                     if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tsteamproxy.data contents\r\n");
                                     if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tprogram:\t{argList[0]}\r\n");
                                     if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\targuments:\t{string.Join(" ", argList.Skip(1))}\r\n");
                                     if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tsteamid:\t{steamShortcutId}\r\n");
 
+                                    if (startBigPicture)
+                                    {
+                                        if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tstart\tsteam://open/bigpicture\r\n");
+                                        Process.Start($"steam://open/bigpicture");
+                                        Thread.Sleep(1000);
+                                    }
                                     if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tstart\tsteam://rungameid/{steamShortcutId}\r\n");
                                     Process.Start($"steam://rungameid/{steamShortcutId}");
 
@@ -305,7 +362,11 @@ namespace GameLaunchProxy
                                         steamShortcutID = UInt64.Parse(lines[2]);
                                     }
                                     catch { };
-                                    //string ProxyID = lines[3];
+                                    bool endBigPictureInternal = false;
+                                    if(!bool.TryParse(lines[3], out endBigPictureInternal))
+                                    {
+                                        endBigPictureInternal = false;
+                                    }
 
                                     if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tsteamproxy.data [{lines.Length}]\r\n");
                                     if (instanceID != null) for (int z = 0; z < lines.Length; z++) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\t[{z}]\t{lines[z]}\r\n");
@@ -322,6 +383,89 @@ namespace GameLaunchProxy
                                         }
                                     }
                                     catch { }
+
+
+
+
+                                    //close big picture
+                                    if(endBigPictureInternal)
+                                    {
+                                        if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tTrying to close BigPicture, this is 'fun'\r\n");
+                                        IntPtr possibleBigPicture = GetForegroundWindow();
+
+                                        List<WindowData> handles = new List<WindowData>();
+                                        Process[] procs2 = Process.GetProcessesByName("steam");
+                                        foreach (Process proc in procs2)
+                                        {
+                                            foreach (ProcessThread thread in proc.Threads)
+                                                EnumThreadWindows(thread.Id, (hWnd, lParam) => { handles.Add(new WindowData() { proc = proc, win = hWnd }); return true; }, IntPtr.Zero);
+                                        }
+                                        if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tFound {handles.Count} possible Steam windows\r\n");
+
+                                        handles = handles.Where(windowHandle =>
+                                        {
+                                            StringBuilder message = new StringBuilder(1000);
+                                            SendMessage(windowHandle.win, WM_GETTEXT, message.Capacity, message);
+                                            return message.ToString() == "Steam";
+                                        }).ToList();
+
+                                        if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tNarrowed to {handles.Count} possible Steam windows\r\n");
+
+                                        // if the active window is in the set, we're done
+                                        var activeWindowAndSteam = handles.Where(winDat => winDat.win == possibleBigPicture);
+                                        if(activeWindowAndSteam.Count() == 1)
+                                        {
+                                            handles = activeWindowAndSteam.ToList();
+                                            if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tACTIVE WINDOW IS BIG PICTURE! Easy!\r\n");
+                                        }
+
+                                        // there's too many windows still, try getting the biggest window
+                                        if (handles.Count > 1)
+                                        {
+                                            handles.ForEach(winDat =>
+                                            {
+                                                winDat.rec = new Rect();
+                                                GetWindowRect(winDat.win, ref winDat.rec);
+                                            });
+
+                                            int Area = handles.Max(winDat => (winDat.rec.Right - winDat.rec.Left) * (winDat.rec.Bottom - winDat.rec.Top));
+                                            handles = handles.Where(winDat => ((winDat.rec.Right - winDat.rec.Left) * (winDat.rec.Bottom - winDat.rec.Top)) == Area).ToList();
+                                            if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tGrabbing biggest Steam windows, {handles.Count} found\r\n");
+
+                                            if (handles.Count > 1)
+                                            {
+                                                var qry = handles.Where(winDat => winDat.rec.Left == 0 && winDat.rec.Top == 0);
+                                                if (qry.Count() == 1)
+                                                {
+                                                    handles = qry.ToList();
+                                                    if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tLast resort, if there's one at 0,0 we're using it\r\n");
+                                                }
+                                            }
+                                        }
+
+                                        if (handles.Count > 0)
+                                        {
+                                            if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tSending Big Picture Alt+F4\r\n");
+                                            IntPtr WindowToFind = handles.First().win;
+                                            Keyboard.Key key = new Keyboard.Key(Keyboard.Messaging.VKeys.KEY_F4);
+                                            Keyboard.Messaging.ForegroundKeyPressAll(WindowToFind, key, true, false, false);
+                                        }
+                                        else
+                                        {
+                                            if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", $"{instanceID}\tCouldn't find Big Picture window :(\r\n");
+                                        }
+                                    }
+
+
+
+
+
+
+
+
+
+
+
                                 }
                             }
                             else

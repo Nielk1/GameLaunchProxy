@@ -31,27 +31,39 @@ The command in your front end to launch this proxy should be as such:
 ~~~~
 -steamproxyactivate IDVALUE
 ~~~~
-This is the ID value of the proxy.  This is used by the launcher to lookup proxy information.
-This is also used, if shortcut renaming is working and applied, to find the shortcut in steam.
+This is the ID value of the proxy.  This is used by the launcher to lookup proxy information.  
+This is also used, if shortcut renaming is working and applied, to find the shortcut in steam.  
 
 ~~~~
 -steamproxysetup IDVALUE
 ~~~~
-This is the ID value of the proxy.  It serves no purpose here except to allow the proxy to find the shortcut for renaming.
-It also allows for multiple shortcuts to the same proxy with the same name to exist in Steam.
-However, it is suggested you name your shortcuts appropriately for those incidents where the rename functionality fails.
+This is the ID value of the proxy.  It serves no purpose here except to allow the proxy to find the shortcut for renaming.  
+It also allows for multiple shortcuts to the same proxy with the same name to exist in Steam.  
+However, it is suggested you name your shortcuts appropriately for those incidents where the rename functionality fails.  
 
 ~~~~
 -steamproxyname NAME
 ~~~~
 Optional
-All instances of "%cleanromname%" in its value will be replaced with the filename of the rom without extension.
-Note that if the rom is not the last argument you should avoid using "%cleanromname%".
-Names with spaces should be quoted as with any CLI value.
+All instances of "%cleanromname%" in its value will be replaced with the filename of the rom without extension.  
+Note that if the rom is not the last argument you should avoid using "%cleanromname%".  
+Names with spaces should be quoted as with any CLI value.  
 
 ~~~~
 -steamproxyhold
 ~~~~
-Optional
-When supplied, the proxy will hold for 10 seconds and then look for the target application.  If found, it will hold until said program is closed.
-Note that in some cases, such as with the RocketLauncher middleware, this option may cause the middleware to hang open. Be sure to test your setup.
+Optional  
+When supplied, the proxy will hold for 10 seconds and then look for the target application.  If found, it will hold until said program is closed.  
+Note that in some cases, such as with the RocketLauncher middleware, this option may cause the middleware to hang open. Be sure to test your setup.  
+
+~~~~
+-steamproxyforcebigpicture
+~~~~
+Optional  
+Big Picture will open before starting the game.  
+
+~~~~
+-steamproxyclosebigpicture
+~~~~
+Optional  
+Big Picture will close after starting the game.  Warning, if Big Picture was not used, a random Steam window could close.  

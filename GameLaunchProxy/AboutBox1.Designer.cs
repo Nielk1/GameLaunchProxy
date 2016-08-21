@@ -38,23 +38,27 @@
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.labelCompanyName = new System.Windows.Forms.Label();
             this.labelCopyright = new System.Windows.Forms.Label();
+            this.Page_2 = new Liron.Windows.Forms.MultiPanelPage();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.Page_3 = new Liron.Windows.Forms.MultiPanelPage();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.Page_4 = new Liron.Windows.Forms.MultiPanelPage();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.Page_2 = new Liron.Windows.Forms.MultiPanelPage();
-            this.Page_3 = new Liron.Windows.Forms.MultiPanelPage();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.Page_4 = new Liron.Windows.Forms.MultiPanelPage();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.radioButton5 = new System.Windows.Forms.RadioButton();
+            this.Page_5 = new Liron.Windows.Forms.MultiPanelPage();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.multiPanel1.SuspendLayout();
             this.Page_1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.Page_2.SuspendLayout();
             this.Page_3.SuspendLayout();
             this.Page_4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
+            this.Page_5.SuspendLayout();
             this.SuspendLayout();
             // 
             // okButton
@@ -97,6 +101,7 @@
             this.multiPanel1.Controls.Add(this.Page_2);
             this.multiPanel1.Controls.Add(this.Page_3);
             this.multiPanel1.Controls.Add(this.Page_4);
+            this.multiPanel1.Controls.Add(this.Page_5);
             this.multiPanel1.Location = new System.Drawing.Point(146, 40);
             this.multiPanel1.Name = "multiPanel1";
             this.multiPanel1.SelectedPage = this.Page_1;
@@ -203,6 +208,84 @@
             this.labelCopyright.Text = "Copyright";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // Page_2
+            // 
+            this.Page_2.Controls.Add(this.textBox3);
+            this.Page_2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Page_2.Location = new System.Drawing.Point(0, 0);
+            this.Page_2.Name = "Page_2";
+            this.Page_2.Size = new System.Drawing.Size(546, 136);
+            this.Page_2.TabIndex = 1;
+            this.Page_2.Text = "Page_2";
+            // 
+            // textBox3
+            // 
+            this.textBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.textBox3.Location = new System.Drawing.Point(0, 0);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox3.Multiline = true;
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
+            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox3.Size = new System.Drawing.Size(546, 136);
+            this.textBox3.TabIndex = 32;
+            this.textBox3.Text = resources.GetString("textBox3.Text");
+            // 
+            // Page_3
+            // 
+            this.Page_3.Controls.Add(this.textBox2);
+            this.Page_3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Page_3.Location = new System.Drawing.Point(0, 0);
+            this.Page_3.Name = "Page_3";
+            this.Page_3.Size = new System.Drawing.Size(404, 136);
+            this.Page_3.TabIndex = 2;
+            this.Page_3.Text = "Page_3";
+            // 
+            // textBox2
+            // 
+            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.textBox2.Location = new System.Drawing.Point(0, 0);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox2.Size = new System.Drawing.Size(404, 136);
+            this.textBox2.TabIndex = 32;
+            this.textBox2.Text = resources.GetString("textBox2.Text");
+            // 
+            // Page_4
+            // 
+            this.Page_4.Controls.Add(this.textBox1);
+            this.Page_4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Page_4.Location = new System.Drawing.Point(0, 0);
+            this.Page_4.Name = "Page_4";
+            this.Page_4.Size = new System.Drawing.Size(546, 136);
+            this.Page_4.TabIndex = 3;
+            this.Page_4.Text = "Page_4";
+            // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.textBox1.Location = new System.Drawing.Point(0, 0);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox1.Size = new System.Drawing.Size(546, 136);
+            this.textBox1.TabIndex = 32;
+            this.textBox1.Text = "https://github.com/m4dEngi/open-steamworks";
+            // 
             // logoPictureBox
             // 
             this.logoPictureBox.Image = global::GameLaunchProxy.Properties.Resources.Nielk1_eyes_128;
@@ -247,26 +330,6 @@
             this.radioButton3.UseVisualStyleBackColor = true;
             this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButtonPage_CheckedChanged);
             // 
-            // Page_2
-            // 
-            this.Page_2.Controls.Add(this.textBox3);
-            this.Page_2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Page_2.Location = new System.Drawing.Point(0, 0);
-            this.Page_2.Name = "Page_2";
-            this.Page_2.Size = new System.Drawing.Size(546, 136);
-            this.Page_2.TabIndex = 1;
-            this.Page_2.Text = "Page_2";
-            // 
-            // Page_3
-            // 
-            this.Page_3.Controls.Add(this.textBox2);
-            this.Page_3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Page_3.Location = new System.Drawing.Point(0, 0);
-            this.Page_3.Name = "Page_3";
-            this.Page_3.Size = new System.Drawing.Size(404, 136);
-            this.Page_3.TabIndex = 2;
-            this.Page_3.Text = "Page_3";
-            // 
             // radioButton4
             // 
             this.radioButton4.Appearance = System.Windows.Forms.Appearance.Button;
@@ -283,63 +346,47 @@
             this.radioButton4.UseVisualStyleBackColor = true;
             this.radioButton4.Click += new System.EventHandler(this.radioButtonPage_CheckedChanged);
             // 
-            // Page_4
+            // radioButton5
             // 
-            this.Page_4.Controls.Add(this.textBox1);
-            this.Page_4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Page_4.Location = new System.Drawing.Point(0, 0);
-            this.Page_4.Name = "Page_4";
-            this.Page_4.Size = new System.Drawing.Size(404, 136);
-            this.Page_4.TabIndex = 3;
-            this.Page_4.Text = "Page_4";
+            this.radioButton5.Appearance = System.Windows.Forms.Appearance.Button;
+            this.radioButton5.AutoSize = true;
+            this.radioButton5.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(54)))), ((int)(((byte)(54)))), ((int)(((byte)(54)))));
+            this.radioButton5.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.radioButton5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.radioButton5.Location = new System.Drawing.Point(413, 9);
+            this.radioButton5.Name = "radioButton5";
+            this.radioButton5.Size = new System.Drawing.Size(64, 25);
+            this.radioButton5.TabIndex = 38;
+            this.radioButton5.Text = "Keyboard";
+            this.radioButton5.UseVisualStyleBackColor = true;
+            this.radioButton5.Click += new System.EventHandler(this.radioButtonPage_CheckedChanged);
             // 
-            // textBox1
+            // Page_5
             // 
-            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(404, 136);
-            this.textBox1.TabIndex = 32;
-            this.textBox1.Text = "https://github.com/m4dEngi/open-steamworks";
+            this.Page_5.Controls.Add(this.textBox4);
+            this.Page_5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Page_5.Location = new System.Drawing.Point(0, 0);
+            this.Page_5.Name = "Page_5";
+            this.Page_5.Size = new System.Drawing.Size(546, 136);
+            this.Page_5.TabIndex = 4;
+            this.Page_5.Text = "Page_5";
             // 
-            // textBox2
+            // textBox4
             // 
-            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            this.textBox2.Location = new System.Drawing.Point(0, 0);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox2.Size = new System.Drawing.Size(404, 136);
-            this.textBox2.TabIndex = 32;
-            this.textBox2.Text = resources.GetString("textBox2.Text");
-            // 
-            // textBox3
-            // 
-            this.textBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            this.textBox3.Location = new System.Drawing.Point(0, 0);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox3.Multiline = true;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ReadOnly = true;
-            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox3.Size = new System.Drawing.Size(546, 136);
-            this.textBox3.TabIndex = 32;
-            this.textBox3.Text = resources.GetString("textBox3.Text");
+            this.textBox4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.textBox4.Location = new System.Drawing.Point(0, 0);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox4.Multiline = true;
+            this.textBox4.Name = "textBox4";
+            this.textBox4.ReadOnly = true;
+            this.textBox4.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox4.Size = new System.Drawing.Size(546, 136);
+            this.textBox4.TabIndex = 33;
+            this.textBox4.Text = "https://github.com/EasyAsABC123/Keyboard";
             // 
             // AboutBox1
             // 
@@ -351,6 +398,7 @@
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton3);
             this.Controls.Add(this.radioButton4);
+            this.Controls.Add(this.radioButton5);
             this.Controls.Add(this.multiPanel1);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.logoPictureBox);
@@ -367,13 +415,15 @@
             this.Page_1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.Page_2.ResumeLayout(false);
             this.Page_2.PerformLayout();
             this.Page_3.ResumeLayout(false);
             this.Page_3.PerformLayout();
             this.Page_4.ResumeLayout(false);
             this.Page_4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
+            this.Page_5.ResumeLayout(false);
+            this.Page_5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -401,5 +451,8 @@
         private System.Windows.Forms.TextBox textBox2;
         private Liron.Windows.Forms.MultiPanelPage Page_4;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.RadioButton radioButton5;
+        private Liron.Windows.Forms.MultiPanelPage Page_5;
+        private System.Windows.Forms.TextBox textBox4;
     }
 }

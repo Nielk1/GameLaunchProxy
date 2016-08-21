@@ -119,6 +119,10 @@
     <None Include="Resources\GameLaunchProxy.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Keyboard\Keyboard.csproj">
+      <Project>{fe61ad51-a5bc-4133-8657-ae21d1b98afe}</Project>
+      <Name>Keyboard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Liron.Windows.Forms\Liron.Windows.Forms.csproj">
       <Project>{1eb31359-e7f5-42ed-8794-49f53e1a9cf1}</Project>
       <Name>Liron.Windows.Forms</Name>

@@ -107,6 +107,7 @@ namespace GameLaunchProxy
             if (radioButton2.Checked) multiPanel1.SelectedPage = Page_2;
             if (radioButton3.Checked) multiPanel1.SelectedPage = Page_3;
             if (radioButton4.Checked) multiPanel1.SelectedPage = Page_4;
+            if (radioButton5.Checked) multiPanel1.SelectedPage = Page_5;
         }
 
         private void logoPictureBox_MouseEnter(object sender, EventArgs e)
