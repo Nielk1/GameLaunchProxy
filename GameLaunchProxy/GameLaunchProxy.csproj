@@ -39,6 +39,18 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.HashFunction.Core, Version=1.8.2.2, Culture=neutral, PublicKeyToken=80c9288e394c1322, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.HashFunction.Core.1.8.2.2\lib\net45\System.Data.HashFunction.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.HashFunction.CRC, Version=1.8.2.2, Culture=neutral, PublicKeyToken=80c9288e394c1322, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.HashFunction.CRC.1.8.2.2\lib\net45\System.Data.HashFunction.CRC.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.HashFunction.Interfaces, Version=1.0.0.2, Culture=neutral, PublicKeyToken=80c9288e394c1322, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.HashFunction.Interfaces.1.0.0.2\lib\net45\System.Data.HashFunction.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -107,14 +119,22 @@
     <None Include="Resources\GameLaunchProxy.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libraries\open-steamworks-fork\open-steamworks\Steam4NET2\Steam4NET2\Steam4NET.csproj">
-      <Project>{1a204257-fe82-4bbe-9ed4-40694821c31f}</Project>
-      <Name>Steam4NET</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Liron.Windows.Forms\Liron.Windows.Forms.csproj">
       <Project>{1eb31359-e7f5-42ed-8794-49f53e1a9cf1}</Project>
       <Name>Liron.Windows.Forms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Steam4NET2\Steam4NET.csproj">
+      <Project>{1a204257-fe82-4bbe-9ed4-40694821c31f}</Project>
+      <Name>Steam4NET</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="about\DataHashFunction.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="about\NewtonsoftJson.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

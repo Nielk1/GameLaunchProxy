@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLaunchProxy", "GameLaun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Liron.Windows.Forms", "Liron.Windows.Forms\Liron.Windows.Forms.csproj", "{1EB31359-E7F5-42ED-8794-49F53E1A9CF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam4NET", "..\..\Libraries\open-steamworks-fork\open-steamworks\Steam4NET2\Steam4NET2\Steam4NET.csproj", "{1A204257-FE82-4BBE-9ED4-40694821C31F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam4NET", "Steam4NET2\Steam4NET.csproj", "{1A204257-FE82-4BBE-9ED4-40694821C31F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

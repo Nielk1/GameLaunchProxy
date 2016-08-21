@@ -125,7 +125,7 @@ namespace GameLaunchProxy
 
                     CGameID gameID = ClientShortcuts.GetGameIDForAppID(appID);
                     if (shortcutID == gameID.ConvertToUint64()
-                      || ClientShortcuts.GetShortcutExeByIndex(index).Contains($"-steamproxy {steamShortcutID}"))
+                      || ClientShortcuts.GetShortcutExeByIndex(index).Contains($"-steamproxyactivate {steamShortcutID}"))
                     {
                         string name = ClientShortcuts.GetShortcutAppNameByAppID(appID);
                         ClientShortcuts.SetShortcutAppName(appID, newName);
@@ -152,7 +152,7 @@ namespace GameLaunchProxy
 
                     CGameID gameID = ClientShortcuts.GetGameIDForAppID(appID);
                     if (shortcutID == gameID.ConvertToUint64()
-                      || ClientShortcuts.GetShortcutExeByIndex(index).EndsWith($"-steamproxy {steamShortcutID}"))
+                      || ClientShortcuts.GetShortcutExeByIndex(index).EndsWith($"-steamproxyactivate {steamShortcutID}"))
                     {
                         return ClientShortcuts.GetShortcutAppNameByAppID(appID);
                     }
@@ -178,7 +178,7 @@ namespace GameLaunchProxy
 
                     CGameID gameID = ClientShortcuts.GetGameIDForAppID(appID);
                     if (shortcutID == gameID.ConvertToUint64()
-                      || ClientShortcuts.GetShortcutExeByIndex(index).EndsWith($"-steamproxy {steamShortcutID}"))
+                      || ClientShortcuts.GetShortcutExeByIndex(index).EndsWith($"-steamproxyactivate {steamShortcutID}"))
                     {
                         return gameID.ConvertToUint64();
                     }

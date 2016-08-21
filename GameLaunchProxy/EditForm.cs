@@ -46,6 +46,7 @@ namespace GameLaunchProxy
             LoadSettings();
             UpdateLaunchOptionsList();
             UpdateSteamShortcutList();
+            loggingToolStripMenuItem.Checked = settings.logging;
             LoadProgramItem(null);
         }
 
@@ -306,7 +307,7 @@ namespace GameLaunchProxy
                 txtSteamShortcutName.Text = selectedShortcut.Name;
                 txtSteamShortcutTarget.Text = selectedShortcut.LaunchPath;
                 txtSteamShortcutShortcut.Text = selectedShortcut.ID.ToString();
-                txtLaunchBoxPath.Text = selectedShortcut.LaunchPath.Replace("-steamproxy", "-steamproxystart") + " -steamproxyname \"<Name for Steam>\" <original emulator command line>";
+                txtLaunchBoxPath.Text = selectedShortcut.LaunchPath.Replace("-steamproxyactivate", "-steamproxysetup") + " -steamproxyname \"<Name for Steam>\" <original emulator command line>";
 
                 txtSteamShortcutName.Enabled = true;
                 txtSteamShortcutTarget.Enabled = true;
@@ -353,6 +354,10 @@ namespace GameLaunchProxy
                 if(selectedShortcut != null)
                 {
                     selectedShortcut.Name = txtSteamShortcutName.Text;
+                    selectedShortcut.ID = selectedShortcut.GenerateGameID();
+                    ignoreSteamShortcutFields = true;
+                    txtSteamShortcutShortcut.Text = selectedShortcut.ID.ToString();
+                    ignoreSteamShortcutFields = false;
                     SaveSettings();
                     UpdateSteamShortcutList();
                 }
@@ -365,6 +370,10 @@ namespace GameLaunchProxy
                 if (selectedShortcut != null)
                 {
                     selectedShortcut.LaunchPath = txtSteamShortcutTarget.Text;
+                    selectedShortcut.ID = selectedShortcut.GenerateGameID();
+                    ignoreSteamShortcutFields = true;
+                    txtSteamShortcutShortcut.Text = selectedShortcut.ID.ToString();
+                    ignoreSteamShortcutFields = false;
                     SaveSettings();
                 }
             }
@@ -388,5 +397,12 @@ namespace GameLaunchProxy
             }
         }
         #endregion Edit Steam Shortcut
+
+        private void loggingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            settings.logging = !settings.logging;
+            loggingToolStripMenuItem.Checked = settings.logging;
+            SaveSettings();
+        }
     }
 }

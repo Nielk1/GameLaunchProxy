@@ -67,6 +67,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtLaunchBoxPath = new System.Windows.Forms.TextBox();
+            this.loggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -282,6 +283,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loggingToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -490,11 +492,13 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 81);
+            this.label6.Location = new System.Drawing.Point(3, 78);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(489, 65);
+            this.label6.Size = new System.Drawing.Size(331, 39);
             this.label6.TabIndex = 7;
-            this.label6.Text = resources.GetString("label6.Text");
+            this.label6.Text = "Add the Target as a third party game on Steam.\r\nBe sure the Name and Target match" +
+    " between Steam and the above.\r\nYou may customize these values but they must matc" +
+    "h.";
             // 
             // label7
             // 
@@ -515,6 +519,13 @@
             this.txtLaunchBoxPath.ReadOnly = true;
             this.txtLaunchBoxPath.Size = new System.Drawing.Size(409, 20);
             this.txtLaunchBoxPath.TabIndex = 9;
+            // 
+            // loggingToolStripMenuItem
+            // 
+            this.loggingToolStripMenuItem.Name = "loggingToolStripMenuItem";
+            this.loggingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loggingToolStripMenuItem.Text = "Logging";
+            this.loggingToolStripMenuItem.Click += new System.EventHandler(this.loggingToolStripMenuItem_Click);
             // 
             // EditForm
             // 
@@ -595,6 +606,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtLaunchBoxPath;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ToolStripMenuItem loggingToolStripMenuItem;
     }
 }
 
