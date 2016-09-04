@@ -69,7 +69,7 @@ namespace GameLaunchProxy
             public Rect rec;
         }
 
-        struct SteamProxy
+        struct SteamProxyData
         {
             public string Program;
             public string Args;
@@ -98,21 +98,291 @@ namespace GameLaunchProxy
             LoadSettings();
 
             LogMessage($"Start");
+            LogMessage($"Version {Assembly.GetExecutingAssembly().GetName().Version.ToString()}");
             //LogMessage($"Args[{args.Length}]");
             //for (int x = 0; x < args.Length; x++) LogMessage($"[{x}]\t{args[x]}");
             LogMessage($"Raw Command Line\t{Environment.CommandLine}");
 
             if (args.Length > 0)
             {
-                if (args.Contains("-steamproxysetup"))
+                if(args.Contains("-proxy"))
+                {
+                    // anything after the command -proxy is treated as part of the proxy.
+
+                    #region Clean Up Stuck Old Run
+                    CleanupSteamRename();
+
+                    #endregion Clean Up Stuck Old Run
+
+                    #region Break Up Arguments
+                    string rawCommandLine = Environment.CommandLine;
+                    List<string> rawArgList = Regex.Matches(rawCommandLine, @"[\""].+?[\""]|[^ ]+")
+                                                    .Cast<Match>()
+                                                    .Select(m => m.Value)
+                                                    .Skip(1)
+                                                    .ToList();
+                    int proxyFlagIndex = rawArgList.IndexOf("-proxy");
+                    List<string> ProxyArgs = rawArgList.Take(proxyFlagIndex).ToList();
+                    List<string> EmulatorArgs = rawArgList.Skip(proxyFlagIndex + 1).ToList();
+                    #endregion Break Up Arguments
+
+                    #region Process Arguments
+                    bool steam = ProxyArgs.Contains("-steam");
+                    bool bigpicture = steam = ProxyArgs.Contains("-steambigpicture");
+                    string rom = null;
+                    int indexOfRomArg = -1;
+                    if ((indexOfRomArg = ProxyArgs.IndexOf("-rom")) > -1)
+                    {
+                        if (ProxyArgs.Count > (indexOfRomArg + 1))
+                        {
+                            rom = ProxyArgs[indexOfRomArg + 1].Trim('"');
+                        }
+                    }
+                    else
+                    {
+                        string possibleRom = EmulatorArgs.Last().Trim('"');
+                        if (possibleRom.IndexOfAny(Path.GetInvalidPathChars().Union(Path.GetInvalidFileNameChars()).ToArray()) > -1)
+                        {
+                            rom = possibleRom;
+                        }
+                        else if (possibleRom.IndexOfAny(Path.GetInvalidFileNameChars()) > -1)
+                        {
+                            rom = possibleRom;
+                        }
+                    }
+                    string name = null;
+                    int indexOfNameArg = -1;
+                    if ((indexOfNameArg = ProxyArgs.IndexOf("-name")) > -1)
+                    {
+                        if (ProxyArgs.Count > (indexOfNameArg + 1))
+                        {
+                            name = ProxyArgs[indexOfNameArg + 1];
+                        }
+                    }
+                    string fallBackName = null;
+                    int indexOfFallBackNameArg = -1;
+                    if ((indexOfFallBackNameArg = ProxyArgs.IndexOf("-fallbackname")) > -1)
+                    {
+                        if (ProxyArgs.Count > (indexOfFallBackNameArg + 1))
+                        {
+                            fallBackName = ProxyArgs[indexOfFallBackNameArg + 1];
+                        }
+                    }
+                    #endregion Process Arguments
+
+                    // lookup an entry to do work for, swap out dictionary system for a raw list with a regex scan.
+                    // Sure it's slow but such customziation is rare.
+
+                    if (steam)
+                    {
+                        string cleanname = Path.GetFileNameWithoutExtension(rom);
+                        string cleanplatformname = string.Empty;
+                        if (name.Contains("%gamename%") || name.Contains("%platformname%") || fallBackName.Contains("%gamename%") || fallBackName.Contains("%platformname%"))
+                        {
+                            List<GameNameData> launchbox_names;
+                            if (File.Exists("names_launchbox.json"))
+                            {
+                                launchbox_names = JsonConvert.DeserializeObject<List<GameNameData>>(File.ReadAllText("names_launchbox.json"));
+                            }
+                            else
+                            {
+                                launchbox_names = new List<GameNameData>();
+                            }
+
+                            List<GameNameData> possibleNameMatches = new List<GameNameData>();
+                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileFullPath != null && dr.OuterFileFullPath == rom).ToList());
+                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && dr.OuterFileName == Path.GetFileName(rom)).ToList());
+                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && Path.GetFileNameWithoutExtension(dr.OuterFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
+                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && dr.InnerFileName == Path.GetFileName(rom)).ToList());
+                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && Path.GetFileNameWithoutExtension(dr.InnerFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
+
+                            GameNameData gameNameData = possibleNameMatches.FirstOrDefault();
+                            if (gameNameData != null)
+                            {
+                                cleanname = gameNameData.Title;
+                                cleanplatformname = gameNameData.Platform;
+                            }
+                        }
+
+                        if (name == null)
+                        {
+                            name = "%gamename%";
+                        }
+                        name = name.Trim('"');
+                        if (name.Contains("%gamename%") || name.Contains("%platformname%"))
+                        {
+                            LogMessage($"-name Contains %gamename% or %platformname%");
+
+
+                            while (name.Contains("%gamename%"))
+                            {
+                                name = name.Replace("%gamename%", cleanname);
+                            }
+                            while (name.Contains("%platformname%"))
+                            {
+                                name = name.Replace("%platformname%", cleanplatformname);
+                            }
+                            LogMessage($"New -name\t{name}");
+                        }
+
+                        fallBackName = fallBackName.Trim('"');
+                        if (fallBackName.Contains("%gamename%") || fallBackName.Contains("%platformname%"))
+                        {
+                            LogMessage($"-fallbackname Contains %gamename% or %platformname%");
+
+                            while (fallBackName.Contains("%gamename%"))
+                            {
+                                fallBackName = fallBackName.Replace("%gamename%", cleanname);
+                            }
+                            while (fallBackName.Contains("%platformname%"))
+                            {
+                                fallBackName = fallBackName.Replace("%platformname%", cleanplatformname);
+                            }
+                            LogMessage($"New -fallbackname\t{fallBackName}");
+                        }
+
+                        string proxyPath;
+                        {
+                            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                            UriBuilder uri = new UriBuilder(codeBase);
+                            string path = Uri.UnescapeDataString(uri.Path);
+                            proxyPath = Path.GetFullPath(path);
+                            proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "SteamProxy.exe");
+                        }
+
+                        List<Tuple<string, bool>> names = new List<Tuple<string, bool>>();
+                        if (!string.IsNullOrWhiteSpace(name))
+                        {
+                            names.Add(new Tuple<string, bool>(name, false));
+                            names.Add(new Tuple<string, bool>("SteamProxy", true));
+                        }
+                        if (!string.IsNullOrWhiteSpace(fallBackName))
+                            names.Add(new Tuple<string, bool>(fallBackName, false));
+                        names.Add(new Tuple<string, bool>("SteamProxy", false));
+
+                        UInt64 steamShortcutId = 0;
+                        for (int x = 0; x < names.Count && steamShortcutId == 0; x++)
+                        {
+                            steamShortcutId = SteamContext.GetInstance().GetShortcutID(names[x].Item1, proxyPath, settings.Core.SteamShortcutFilePath);
+                            if (steamShortcutId != 0 && names[x].Item2)
+                            {
+                                //UInt64 oldSteamShortcutId = steamShortcutId;
+                                //string oldSteamShortcutName = names[x].Item1;
+                                steamShortcutId = SteamContext.GetInstance().RenameLiveShortcut(steamShortcutId, name);
+
+                                if (steamShortcutId != 0)
+                                {
+                                    File.WriteAllText("SteamName.restore", steamShortcutId + "\r\n" + names[x].Item1);
+                                    break; // loop will terminate anyway but why not
+                                }
+                            }
+                        }
+
+                        if (steamShortcutId == 0)
+                        {
+                            StringBuilder message = new StringBuilder();
+                            message.AppendLine("Could not find a fitting Steam shortcut");
+                            message.AppendLine($"EXE: {proxyPath}");
+                            message.AppendLine($"Names: {string.Join(", ", names.Select(dr => "\"" + dr + "\"").ToArray())}");
+
+                            MessageBox.Show(message.ToString(), "Couldn't find usable Steam Shortcut", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        // create steamproxy.json file
+                        {
+                            // save data about launch item into temporary data
+                            SteamProxyData steamProxy = new SteamProxyData()
+                            {
+                                Program = EmulatorArgs[0].StartsWith("\"") && EmulatorArgs[0].EndsWith("\"") ? EmulatorArgs[0].Substring(1, EmulatorArgs[0].Length - 2) : EmulatorArgs[0],
+                                Args = string.Join(" ", EmulatorArgs.Skip(1)),
+                                ShortcutID = steamShortcutId
+                            };
+                            File.WriteAllText("steamproxy.json", JsonConvert.SerializeObject(steamProxy));
+
+                            LogMessage($"steamproxy.json contents");
+                            LogMessage(JsonConvert.SerializeObject(steamProxy));
+                        }
+
+
+                        bool AlreadyInBigPicture = SteamContext.GetInstance().BigPicturePID != 0;
+                        SetupBigPicture(bigpicture && !AlreadyInBigPicture);
+
+                        LogMessage($"start\tsteam://rungameid/{steamShortcutId}");
+                        Process.Start($"steam://rungameid/{steamShortcutId}");
+
+                        Process LookingForProc = null;
+                        for (int tries = 0; tries < 10; tries++)
+                        {
+                            Thread.Sleep(1000);
+
+                            Process[] procs = Process.GetProcessesByName("SteamProxy");
+                            //Process[] procs = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(argList[0].Trim('"')));
+                            LookingForProc = procs.FirstOrDefault();
+
+                            if (LookingForProc != null) break;
+                        }
+                        if (LookingForProc != null)
+                        {
+                            LogMessage($"found process to wait on\t{LookingForProc.ProcessName}");
+
+                            Thread.Sleep(1000);
+                            LookingForProc.WaitForExit();
+                            Thread.Sleep(1000);
+
+
+                            //for(;;)
+                            //{
+                            //    Thread.Sleep(1000);
+                            //    if (!LookingForProc.IsRunning())
+                            //    {
+                            //        break;
+                            //    }
+                            //    //LogMessage($"Proc Still Here");
+                            //}
+
+
+
+                            LogMessage($"ended\tsteam://rungameid/{steamShortcutId}");
+                        }
+                        else
+                        {
+                            LogMessage($"failed to catch process from steam");
+                        }
+
+                        Thread.Sleep(1000);
+
+                        CleanupBigPicture(bigpicture, AlreadyInBigPicture);
+
+                        CleanupSteamRename();
+                    }
+                    else
+                    {
+                        string programPath = EmulatorArgs[0].StartsWith("\"") && EmulatorArgs[0].EndsWith("\"") ? EmulatorArgs[0].Substring(1, EmulatorArgs[0].Length - 2) : EmulatorArgs[0];
+                        string programArgs = string.Join(" ", EmulatorArgs.Skip(1));
+
+                        LogMessage($"Program\t{programPath}");
+                        LogMessage($"Args\t{programArgs}");
+
+                        if (File.Exists(programPath))
+                        {
+                            //ProgramSettings programSettings = LoadProgramSettings(programPath);
+                            //List<string> AddedFonts = SetupFonts(programSettings);
+                            //StartProgram(programSettings, programPath, programArgs); // and wait for it to finish
+                            //CleanupFonts(AddedFonts);
+                            StartProgramTemporarySimplified(programPath, programArgs); // and wait for it to finish
+                        }
+                    }
+                }
+                else if (args.Contains("-steamproxysetup")) // old
                 {
                     SteamProxySetup(args);
                 }
-                else if (args.Contains("-steamproxyactivate"))
+                else if (args.Contains("-steamproxyactivate")) // old
                 {
                     SteamProxyActivate(args);
                 }
-                else
+                else // old
                 {
                     GenericProxy(args);
                 }
@@ -126,6 +396,71 @@ namespace GameLaunchProxy
                 LogMessage($"End GUI");
             }
             LogMessage($"End");
+        }
+
+        private static void LogMessage(string message)
+        {
+            if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", instanceID + "\t" + message + "\r\n");
+        }
+        private static void StartProgramTemporarySimplified(string programPath, string programArgs)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = false;
+            startInfo.UseShellExecute = false;
+            startInfo.FileName = programPath.Trim('"');
+            startInfo.Arguments = programArgs;
+            startInfo.WorkingDirectory = Path.GetDirectoryName(programPath.Trim('"'));
+
+            LogMessage($"Starting Program");
+            LogMessage($"FileName:\t{startInfo.FileName}");
+            LogMessage($"Arguments:\t{startInfo.Arguments}");
+            LogMessage($"WorkingDirectory:\t{startInfo.WorkingDirectory}");
+
+            Process runningProc = Process.Start(startInfo);
+
+            runningProc.WaitForExit();
+            /*for(;;)
+            {
+                if(!runningProc.IsRunning())
+                {
+                    break;
+                }
+                if (alreadyCleaning)
+                {
+                    if (!runningProc.IsRunning())
+                    {
+                        runningProc.Close();
+                    }
+                    break;
+                }
+                Thread.Sleep(1000);
+            }*/
+
+            LogMessage($"Ended Program Normally");
+        }
+
+        private static void CleanupSteamRename()
+        {
+            if (File.Exists("SteamName.restore"))
+            {
+                LogMessage("Restoring old Steam shortcut name");
+
+                string[] lines = File.ReadAllLines("SteamName.restore");
+                UInt64 shortcutID = UInt64.Parse(lines[0]);
+                try
+                {
+                    SteamContext.GetInstance().RenameLiveShortcut(shortcutID, lines[1]);
+                }
+                catch
+                {
+                    LogMessage("Failed to restore Steam shortcut name");
+                    MessageBox.Show("Error occured trying to restore shortcut name.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    File.Delete("SteamName.restore");
+                }
+            }
         }
 
         private static void SteamProxySetup(string[] args)
@@ -265,24 +600,24 @@ namespace GameLaunchProxy
                             UInt64 steamShortcutId = knownShortcut.ID;
 
                             // try to init steamworks
-                            try { SteamContext.Init(); } catch { }
+                            //try { SteamContext.Init(); } catch { }
 
                             // set shortcut name
                             try
                             {
                                 if (!string.IsNullOrWhiteSpace(CLI_steamproxyname))
                                 {
-                                    SteamContext.SetShortcutName(steamShortcutId, CLI_steamproxysetup, CLI_steamproxyname); // agressivly try to find that shortcut
+                                    SteamContext.GetInstance().SetShortcutName(steamShortcutId, CLI_steamproxysetup, CLI_steamproxyname); // agressivly try to find that shortcut
                                     LogMessage($"set shortcut name\t{CLI_steamproxyname}");
                                 }
                             }
                             catch { }
 
                             // get the new shortcut ID due to the rename
-                            try { steamShortcutId = SteamContext.FindShortcut(steamShortcutId, CLI_steamproxysetup); } catch { }
+                            try { steamShortcutId = SteamContext.GetInstance().FindShortcut(steamShortcutId, CLI_steamproxysetup); } catch { }
 
                             // save data about launch item into temporary data
-                            SteamProxy steamProxy = new SteamProxy()
+                            SteamProxyData steamProxy = new SteamProxyData()
                             {
                                 Program = argList[0].StartsWith("\"") && argList[0].EndsWith("\"") ? argList[0].Substring(1, argList[0].Length - 2) : argList[0],
                                 Args = string.Join(" ", argList.Skip(1)),
@@ -347,7 +682,7 @@ namespace GameLaunchProxy
                             {
                                 if (steamShortcutId > 0)
                                 {
-                                    SteamContext.SetShortcutName(steamShortcutId, CLI_steamproxysetup, knownShortcut.Name);
+                                    SteamContext.GetInstance().SetShortcutName(steamShortcutId, CLI_steamproxysetup, knownShortcut.Name);
                                     LogMessage($"set shortcut name\t{knownShortcut.Name}");
                                 }
                             }
@@ -416,9 +751,9 @@ namespace GameLaunchProxy
 
                         if (CLI_steamproxyactivate != null)
                         {
-                            SteamShortcutSettings steamShortcutSetting = settings.SteamShortcuts.Where(shortDat => shortDat.LaunchPath.ToLowerInvariant().EndsWith($"-steamproxyactivate {CLI_steamproxyactivate}".ToLowerInvariant())).FirstOrDefault();
+                            //SteamShortcutSettings steamShortcutSetting = settings.SteamShortcuts.Where(shortDat => shortDat.LaunchPath.ToLowerInvariant().EndsWith($"-steamproxyactivate {CLI_steamproxyactivate}".ToLowerInvariant())).FirstOrDefault();
 
-                            SteamProxy steamProxy = JsonConvert.DeserializeObject<SteamProxy>(File.ReadAllText("steamproxy.json"));
+                            SteamProxyData steamProxy = JsonConvert.DeserializeObject<SteamProxyData>(File.ReadAllText("steamproxy.json"));
                             File.Delete("steamproxy.json");
 
                             LogMessage($"steamproxy.json");
@@ -533,91 +868,102 @@ namespace GameLaunchProxy
             {
                 LogMessage($"start\tsteam://open/bigpicture");
                 Process.Start($"steam://open/bigpicture");
-                Thread.Sleep(1000);
+                for(int t=0;t<100;t++)
+                {
+                    Thread.Sleep(100);
+                    if (SteamContext.GetInstance().BigPicturePID > 0)
+                        break;
+                }
             }
         }
-        private static void CleanupBigPicture(bool performAction)
+        private static void CleanupBigPicture(bool performAction, bool minimize = false)
         {
             //close big picture
             if (performAction)
             {
-                LogMessage($"Trying to close BigPicture, this is 'fun'");
-                IntPtr possibleBigPicture = GetForegroundWindow();
-
-                List<WindowData> handles = new List<WindowData>();
-                Process[] procs2 = Process.GetProcessesByName("steam");
-                foreach (Process proc in procs2)
+                int bigPictureID = SteamContext.GetInstance().BigPicturePID;
+                if (bigPictureID != 0)
                 {
-                    foreach (ProcessThread thread in proc.Threads)
-                        EnumThreadWindows(thread.Id, (hWnd, lParam) => { handles.Add(new WindowData() { proc = proc, win = hWnd }); return true; }, IntPtr.Zero);
-                }
-                LogMessage($"Found {handles.Count} possible Steam windows");
+                    Process bigProc = Process.GetProcessById(bigPictureID);
 
-                // if the active window is in the set, we're done
-                var activeWindowAndSteam = handles.Where(winDat => winDat.win == possibleBigPicture);
-                if (activeWindowAndSteam.Count() == 1)
-                {
-                    handles = activeWindowAndSteam.ToList();
-                    LogMessage($"Active window is steam window, assume it's big picture");
-                }
-
-                if (handles.Count > 1)
-                {
-                    handles = handles.Where(windowHandle =>
+                    if (bigProc != null)
                     {
-                        StringBuilder message = new StringBuilder(1000);
-                        SendMessage(windowHandle.win, WM_GETTEXT, message.Capacity, message);
-                        return message.ToString() == "Steam";
-                    }).ToList();
+                        LogMessage($"Trying to close BigPicture, this is 'fun'");
+                        IntPtr possibleBigPicture = GetForegroundWindow();
 
-                    LogMessage($"Narrowed to {handles.Count} possible Steam windows");
-
-                    
-
-                    // there's too many windows still, try getting the biggest window
-                    if (handles.Count > 1)
-                    {
-                        handles.ForEach(winDat =>
+                        List<WindowData> handles = new List<WindowData>();
+                        Process[] procs2 = Process.GetProcessesByName("steam");
+                        foreach (Process proc in procs2)
                         {
-                            winDat.rec = new Rect();
-                            GetWindowRect(winDat.win, ref winDat.rec);
-                        });
+                            foreach (ProcessThread thread in proc.Threads)
+                                EnumThreadWindows(thread.Id, (hWnd, lParam) => { handles.Add(new WindowData() { proc = proc, win = hWnd }); return true; }, IntPtr.Zero);
+                        }
+                        LogMessage($"Found {handles.Count} possible Steam windows");
 
-                        int Area = handles.Max(winDat => (winDat.rec.Right - winDat.rec.Left) * (winDat.rec.Bottom - winDat.rec.Top));
-                        handles = handles.Where(winDat => ((winDat.rec.Right - winDat.rec.Left) * (winDat.rec.Bottom - winDat.rec.Top)) == Area).ToList();
-                        LogMessage($"Grabbing biggest Steam windows, {handles.Count} found");
+                        // if the active window is in the set, we're done
+                        var activeWindowAndSteam = handles.Where(winDat => winDat.win == possibleBigPicture);
+                        if (activeWindowAndSteam.Count() == 1)
+                        {
+                            handles = activeWindowAndSteam.ToList();
+                            LogMessage($"Active window is steam window, assume it's big picture");
+                        }
 
                         if (handles.Count > 1)
                         {
-                            var qry = handles.Where(winDat => winDat.rec.Left == 0 && winDat.rec.Top == 0);
-                            if (qry.Count() == 1)
+                            handles = handles.Where(windowHandle =>
                             {
-                                handles = qry.ToList();
-                                LogMessage($"Last resort, if there's one at 0,0 we're using it");
+                                StringBuilder message = new StringBuilder(1000);
+                                SendMessage(windowHandle.win, WM_GETTEXT, message.Capacity, message);
+                                return message.ToString() == "Steam";
+                            }).ToList();
+
+                            LogMessage($"Narrowed to {handles.Count} possible Steam windows");
+
+
+
+                            // there's too many windows still, try getting the biggest window
+                            if (handles.Count > 1)
+                            {
+                                handles.ForEach(winDat =>
+                                {
+                                    winDat.rec = new Rect();
+                                    GetWindowRect(winDat.win, ref winDat.rec);
+                                });
+
+                                int Area = handles.Max(winDat => (winDat.rec.Right - winDat.rec.Left) * (winDat.rec.Bottom - winDat.rec.Top));
+                                handles = handles.Where(winDat => ((winDat.rec.Right - winDat.rec.Left) * (winDat.rec.Bottom - winDat.rec.Top)) == Area).ToList();
+                                LogMessage($"Grabbing biggest Steam windows, {handles.Count} found");
+
+                                if (handles.Count > 1)
+                                {
+                                    var qry = handles.Where(winDat => winDat.rec.Left == 0 && winDat.rec.Top == 0);
+                                    if (qry.Count() == 1)
+                                    {
+                                        handles = qry.ToList();
+                                        LogMessage($"Last resort, if there's one at 0,0 we're using it");
+                                    }
+                                }
                             }
                         }
+
+                        if (handles.Count > 0)
+                        {
+                            LogMessage($"Sending Big Picture Alt+F4");
+                            IntPtr WindowToFind = handles.First().win;
+
+                            Keyboard.Key key = new Keyboard.Key(Keyboard.Messaging.VKeys.KEY_F4);
+                            Keyboard.Messaging.ForegroundKeyPressAll(WindowToFind, key, true, false, false);
+                        }
+                        else
+                        {
+                            LogMessage($"Couldn't find Big Picture window :(");
+                        }
                     }
-                }
-
-                if (handles.Count > 0)
-                {
-                    LogMessage($"Sending Big Picture Alt+F4");
-                    IntPtr WindowToFind = handles.First().win;
-
-                    Keyboard.Key key = new Keyboard.Key(Keyboard.Messaging.VKeys.KEY_F4);
-                    Keyboard.Messaging.ForegroundKeyPressAll(WindowToFind, key, true, false, false);
-                }
-                else
-                {
-                    LogMessage($"Couldn't find Big Picture window :(");
                 }
             }
         }
 
-        private static void LogMessage(string message)
-        {
-            if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", instanceID + "\t" + message + "\r\n");
-        }
+        
         private static void StartProgram(ProgramSettings programSetting, string programPath, string programArgs)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();

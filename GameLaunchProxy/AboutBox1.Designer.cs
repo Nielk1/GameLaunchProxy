@@ -44,21 +44,21 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.Page_4 = new Liron.Windows.Forms.MultiPanelPage();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.Page_5 = new Liron.Windows.Forms.MultiPanelPage();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.radioButton5 = new System.Windows.Forms.RadioButton();
-            this.Page_5 = new Liron.Windows.Forms.MultiPanelPage();
-            this.textBox4 = new System.Windows.Forms.TextBox();
             this.multiPanel1.SuspendLayout();
             this.Page_1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.Page_2.SuspendLayout();
             this.Page_3.SuspendLayout();
             this.Page_4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.Page_5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
@@ -240,7 +240,7 @@
             this.Page_3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Page_3.Location = new System.Drawing.Point(0, 0);
             this.Page_3.Name = "Page_3";
-            this.Page_3.Size = new System.Drawing.Size(404, 136);
+            this.Page_3.Size = new System.Drawing.Size(546, 136);
             this.Page_3.TabIndex = 2;
             this.Page_3.Text = "Page_3";
             // 
@@ -256,7 +256,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
             this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox2.Size = new System.Drawing.Size(404, 136);
+            this.textBox2.Size = new System.Drawing.Size(546, 136);
             this.textBox2.TabIndex = 32;
             this.textBox2.Text = resources.GetString("textBox2.Text");
             // 
@@ -285,6 +285,32 @@
             this.textBox1.Size = new System.Drawing.Size(546, 136);
             this.textBox1.TabIndex = 32;
             this.textBox1.Text = "https://github.com/m4dEngi/open-steamworks";
+            // 
+            // Page_5
+            // 
+            this.Page_5.Controls.Add(this.textBox4);
+            this.Page_5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Page_5.Location = new System.Drawing.Point(0, 0);
+            this.Page_5.Name = "Page_5";
+            this.Page_5.Size = new System.Drawing.Size(546, 136);
+            this.Page_5.TabIndex = 4;
+            this.Page_5.Text = "Page_5";
+            // 
+            // textBox4
+            // 
+            this.textBox4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
+            this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            this.textBox4.Location = new System.Drawing.Point(0, 0);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox4.Multiline = true;
+            this.textBox4.Name = "textBox4";
+            this.textBox4.ReadOnly = true;
+            this.textBox4.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox4.Size = new System.Drawing.Size(546, 136);
+            this.textBox4.TabIndex = 33;
+            this.textBox4.Text = "https://github.com/EasyAsABC123/Keyboard";
             // 
             // logoPictureBox
             // 
@@ -362,32 +388,6 @@
             this.radioButton5.UseVisualStyleBackColor = true;
             this.radioButton5.Click += new System.EventHandler(this.radioButtonPage_CheckedChanged);
             // 
-            // Page_5
-            // 
-            this.Page_5.Controls.Add(this.textBox4);
-            this.Page_5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Page_5.Location = new System.Drawing.Point(0, 0);
-            this.Page_5.Name = "Page_5";
-            this.Page_5.Size = new System.Drawing.Size(546, 136);
-            this.Page_5.TabIndex = 4;
-            this.Page_5.Text = "Page_5";
-            // 
-            // textBox4
-            // 
-            this.textBox4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            this.textBox4.Location = new System.Drawing.Point(0, 0);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox4.Multiline = true;
-            this.textBox4.Name = "textBox4";
-            this.textBox4.ReadOnly = true;
-            this.textBox4.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox4.Size = new System.Drawing.Size(546, 136);
-            this.textBox4.TabIndex = 33;
-            this.textBox4.Text = "https://github.com/EasyAsABC123/Keyboard";
-            // 
             // AboutBox1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -421,9 +421,9 @@
             this.Page_3.PerformLayout();
             this.Page_4.ResumeLayout(false);
             this.Page_4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.Page_5.ResumeLayout(false);
             this.Page_5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

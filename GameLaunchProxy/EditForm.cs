@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -24,10 +25,14 @@ namespace GameLaunchProxy
         ProgramSettings selectedItem;
         SteamShortcutSettings selectedShortcut;
 
+        RenamePlatformDialog dlgRenamePlatformDialog;
+
         int FontGroupHeight = 100;
 
         bool ignoreAggressiveFocusChanges = false;
         bool ignoreSteamShortcutFields = false;
+
+        Thread worker = null;
 
         public EditForm()
         {
@@ -37,28 +42,53 @@ namespace GameLaunchProxy
 
             FontGroupHeight = gbFonts.Height;
 
-            try
-            {
-                SteamContext.Init();
-            }
-            catch { }
+            //try
+            //{
+            //    SteamContext.Init();
+            //}
+            //catch { }
 
             LoadSettings();
             UpdateLaunchOptionsList();
             UpdateSteamShortcutList();
             loggingToolStripMenuItem.Checked = settings.logging;
             LoadProgramItem(null);
+
+
+            dlgRenamePlatformDialog = new RenamePlatformDialog();
+
+
+            btnSteamUserDataFind.Enabled = true;// SteamContext.GetInstance().CanGetUserShortcutFile;
+            settingsFirstLoad();
+
+            txtLaunchBoxLibrary.Text = settings.Core.LaunchBoxLibrary;
+
+            settings.PropertyChanged += settings_PropertyChanged;
         }
 
         ~EditForm()
         {
-            try
-            {
-                SteamContext.Shutdown();
-            }
-            catch { }
+            //try
+            //{
+            //    SteamContext.Shutdown();
+            //}
+            //catch { }
+            SteamContext.GetInstance().Shutdown();
         }
 
+        #region MenuStrip
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            about.ShowDialog();
+        }
+        #endregion MenuStrip
+
+        #region Settings
         private void LoadSettings()
         {
             if (File.Exists("settings.json"))
@@ -76,15 +106,344 @@ namespace GameLaunchProxy
             File.WriteAllText("settings.json", JsonConvert.SerializeObject(settings));
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void settings_PropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            this.Close();
+            switch (args.PropertyName)
+            {
+                case "Core.SteamShortcutFilePath":
+                    txtSteamUserData.TextChanged -= txtSteamUserData_TextChanged;
+                    txtSteamUserData.Text = settings.Core.SteamShortcutFilePath;
+                    txtSteamUserData.TextChanged += txtSteamUserData_TextChanged;
+                    break;
+                case "Core.LaunchBoxLibrary":
+                    txtLaunchBoxLibrary.TextChanged -= txtLaunchBoxLibrary_TextChanged;
+                    txtLaunchBoxLibrary.Text = settings.Core.LaunchBoxLibrary;
+                    txtLaunchBoxLibrary.TextChanged += txtLaunchBoxLibrary_TextChanged;
+                    btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null && File.Exists(settings.Core.LaunchBoxLibrary) && (worker == null || !worker.IsAlive);
+                    break;
+            }
+            SaveSettings();
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void settingsFirstLoad()
         {
-            about.ShowDialog();
+            txtSteamUserData.Text = settings.Core.SteamShortcutFilePath;
+            txtLaunchBoxLibrary.Text = settings.Core.LaunchBoxLibrary;
         }
+        #endregion Settings
+
+        #region CoreTab
+        private void btnSteamUserDataFind_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string path = SteamContext.GetInstance().GetUserShortcutFile();
+                if (path != null)
+                {
+                    settings.Core.SteamShortcutFilePath = path;
+                }
+            }
+            catch { }
+        }
+        private void btnSteamUserDataBrowse_Click(object sender, EventArgs e)
+        {
+            if (ofdSteamUserDataShortcuts.ShowDialog() == DialogResult.OK)
+            {
+                settings.Core.SteamShortcutFilePath = ofdSteamUserDataShortcuts.FileName;
+            }
+        }
+        private void txtSteamUserData_TextChanged(object sender, EventArgs e)
+        {
+            settings.Core.SteamShortcutFilePath = txtSteamUserData.Text;
+        }
+
+        private void btnLaunchBoxLibraryBrowse_Click(object sender, EventArgs e)
+        {
+            if (ofdLaunchBoxLibrary.ShowDialog() == DialogResult.OK)
+            {
+                settings.Core.LaunchBoxLibrary = ofdLaunchBoxLibrary.FileName;
+            }
+        }
+        private void txtLaunchBoxLibrary_TextChanged(object sender, EventArgs e)
+        {
+            settings.Core.LaunchBoxLibrary = txtLaunchBoxLibrary.Text;
+        }
+        #endregion CoreTab
+
+        #region SteamShortcutNamesTab
+        private void btnScrapeLaunchBox_Click(object sender, EventArgs e)
+        {
+            if (worker == null || !worker.IsAlive)
+            {
+                btnScrapeLaunchBox.Enabled = false;
+                pbScrapeLaunchBox.Enabled = true;
+                List<GameNameData> gameDat = null;
+
+                pbScrapeLaunchBox.Maximum = 100;
+                pbScrapeLaunchBox.Value = 100;
+                pbScrapeLaunchBox.Style = ProgressBarStyle.Marquee;
+
+                worker = new Thread(() =>
+                {
+                    LaunchBoxLibrary lib = new LaunchBoxLibrary(settings.Core.LaunchBoxLibrary);
+
+                    lib.Progress += delegate (object _sender, int counter, int total)
+                    {
+                        MethodInvoker mi = new MethodInvoker(() =>
+                        {
+                            pbScrapeLaunchBox.Style = ProgressBarStyle.Blocks;
+                            pbScrapeLaunchBox.Maximum = total;
+                            pbScrapeLaunchBox.Value = counter;
+                        });
+                        if (pbScrapeLaunchBox.InvokeRequired)
+                        {
+                            pbScrapeLaunchBox.Invoke(mi);
+                        }
+                        else
+                        {
+                            mi.Invoke();
+                        }
+                    };
+
+                    gameDat = lib.GetGameData();
+                    File.WriteAllText("names_launchbox.json", JsonConvert.SerializeObject(gameDat));
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        pbScrapeLaunchBox.Value = 0;
+                        pbScrapeLaunchBox.Maximum = 0;
+                        worker = null;
+                        pbScrapeLaunchBox.Enabled = false;
+                        btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null && File.Exists(settings.Core.LaunchBoxLibrary) && (worker == null || !worker.IsAlive);
+                    });
+
+
+                    /*MethodInvoker miDone = new MethodInvoker(() =>
+                    {
+                        worker = null;
+                        btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null && File.Exists(settings.Core.LaunchBoxLibrary) && (worker == null || !worker.IsAlive);
+                    });
+                    if (btnScrapeLaunchBox.InvokeRequired)
+                    {
+                        btnScrapeLaunchBox.Invoke(miDone);
+                    }
+                    else
+                    {
+                        miDone.Invoke();
+                    }*/
+                });
+                worker.Start();
+            }
+        }
+
+        private void btnRemoveAllProxyShortcuts_Click(object sender, EventArgs e)
+        {
+            if (settings.Core.SteamShortcutFilePath != null && File.Exists(settings.Core.SteamShortcutFilePath))
+            {
+                string proxyPath;
+                {
+                    string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                    UriBuilder uri = new UriBuilder(codeBase);
+                    string path = Uri.UnescapeDataString(uri.Path);
+                    proxyPath = Path.GetFullPath(path);
+                    proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "SteamProxy.exe");
+                }
+
+                List<SteamShortcut> shortcuts = SteamContext.GetInstance().GetShortcutsForExe(proxyPath, settings.Core.SteamShortcutFilePath);
+                SteamContext.GetInstance().RemoveShortcuts(shortcuts, settings.Core.SteamShortcutFilePath);
+            }
+        }
+
+        private void btnAddAllProxyShortcutsWithPlatform_Click(object sender, EventArgs e)
+        {
+            if (settings.Core.SteamShortcutFilePath != null && File.Exists(settings.Core.SteamShortcutFilePath))
+            {
+                string proxyPath;
+                {
+                    string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                    UriBuilder uri = new UriBuilder(codeBase);
+                    string path = Uri.UnescapeDataString(uri.Path);
+                    proxyPath = Path.GetFullPath(path);
+                    proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "SteamProxy.exe");
+                }
+
+                List<GameNameData> launchbox_names;
+                if (File.Exists("names_launchbox.json"))
+                {
+                    launchbox_names = JsonConvert.DeserializeObject<List<GameNameData>>(File.ReadAllText("names_launchbox.json"));
+                }
+                else
+                {
+                    launchbox_names = new List<GameNameData>();
+                }
+
+
+                
+                List<SteamShortcut> newData = launchbox_names.Select(dr =>
+                {
+                    string title = dr.Title;
+                    if (!string.IsNullOrWhiteSpace(dr.Platform))
+                    {
+                        string platform = dr.Platform;
+                        if(settings.PlatformRenames.ContainsKey(dr.Platform))
+                        {
+                            platform = settings.PlatformRenames[dr.Platform];
+                        }
+                        if (!string.IsNullOrWhiteSpace(platform))
+                        {
+                            title += @" (" + platform + @")";
+                        }
+                    }
+                    return title;
+                }).Distinct().Select(name => new SteamShortcut(name, proxyPath, Path.GetDirectoryName(proxyPath), proxyPath, string.Empty, true, true, false, new List<string>() { "GameLaunchProxy" })).ToList();
+                if(newData.Count > 0)
+                {
+                    try
+                    {
+                        SteamContext.GetInstance().AddShortcuts(newData, settings.Core.SteamShortcutFilePath);
+                    }
+                    catch (SteamException)
+                    {
+                        MessageBox.Show("Error adding shortcuts to running Steam instance.\r\nNote: some shortcuts may have been added.\r\nIf error persists, please close Steam to utilize alternative methods.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void btnAddDefault_Click(object sender, EventArgs e)
+        {
+            if (settings.Core.SteamShortcutFilePath != null && File.Exists(settings.Core.SteamShortcutFilePath))
+            {
+                string proxyPath;
+                {
+                    string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                    UriBuilder uri = new UriBuilder(codeBase);
+                    string path = Uri.UnescapeDataString(uri.Path);
+                    proxyPath = Path.GetFullPath(path);
+                    proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "SteamProxy.exe");
+                }
+
+                List<SteamShortcut> newData = new List<SteamShortcut>();
+                newData.Add(new SteamShortcut("SteamProxy", proxyPath, Path.GetDirectoryName(proxyPath), proxyPath, string.Empty, true, true, false, new List<string>() { "GameLaunchProxy" }));
+                if (newData.Count > 0)
+                {
+                    try
+                    {
+                        SteamContext.GetInstance().AddShortcuts(newData, settings.Core.SteamShortcutFilePath);
+                    }
+                    catch (SteamException)
+                    {
+                        MessageBox.Show("Error adding shortcuts to running Steam instance.\r\nNote: some shortcuts may have been added.\r\nIf error persists, please close Steam to utilize alternative methods.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void btnAddPlatforms_Click(object sender, EventArgs e)
+        {
+            if (settings.Core.SteamShortcutFilePath != null && File.Exists(settings.Core.SteamShortcutFilePath))
+            {
+                string proxyPath;
+                {
+                    string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                    UriBuilder uri = new UriBuilder(codeBase);
+                    string path = Uri.UnescapeDataString(uri.Path);
+                    proxyPath = Path.GetFullPath(path);
+                    proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "SteamProxy.exe");
+                }
+
+                List<SteamShortcut> newData = settings.PlatformRenames.Values.Where(dr => !string.IsNullOrWhiteSpace(dr)).Distinct()
+                    .Select(name => new SteamShortcut(name, proxyPath, Path.GetDirectoryName(proxyPath), proxyPath, string.Empty, true, true, false, new List<string>() { "GameLaunchProxy" })).ToList();
+                if (newData.Count > 0)
+                {
+                    try
+                    {
+                        SteamContext.GetInstance().AddShortcuts(newData, settings.Core.SteamShortcutFilePath);
+                    }
+                    catch (SteamException)
+                    {
+                        MessageBox.Show("Error adding shortcuts to running Steam instance.\r\nNote: some shortcuts may have been added.\r\nIf error persists, please close Steam to utilize alternative methods.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void btnLoadPlatformNameAdjustment_Click(object sender, EventArgs e)
+        {
+            RefreshPlatformNameAdjustmenList();
+        }
+        private void RefreshPlatformNameAdjustmenList()
+        {
+            int selectedIndex = lbPlatformNameAdjustment.SelectedIndex;
+
+            List<GameNameData> launchbox_names = JsonConvert.DeserializeObject<List<GameNameData>>(File.ReadAllText("names_launchbox.json"));
+            List<string> launchbox_platforms = launchbox_names.Select(dr => dr.Platform).Where(dr => !string.IsNullOrWhiteSpace(dr)).Distinct().ToList();
+
+            launchbox_platforms.ForEach(plat =>
+            {
+                if (!settings.PlatformRenames.ContainsKey(plat))
+                    settings.PlatformRenames[plat] = plat;
+            });
+
+            lbPlatformNameAdjustment.BeginUpdate();
+            lbPlatformNameAdjustment.Items.Clear();
+            settings.PlatformRenames.OrderBy(dr => dr.Key).ToList().ForEach(dr => lbPlatformNameAdjustment.Items.Add(new PlatformRenameItem(dr.Key, dr.Value)));
+            lbPlatformNameAdjustment.EndUpdate();
+
+            SaveSettings();
+
+            if (selectedIndex < lbPlatformNameAdjustment.Items.Count)
+            {
+                lbPlatformNameAdjustment.SelectedIndex = selectedIndex;
+            }
+            else
+            {
+                lbPlatformNameAdjustment.SelectedIndex = lbPlatformNameAdjustment.Items.Count - 1;
+            }
+        }
+        private void btnEditPlatformNameAdjustment_Click(object sender, EventArgs e)
+        {
+            object selectedItem = lbPlatformNameAdjustment.SelectedItem;
+            if(selectedItem != null)
+            {
+                PlatformRenameItem selectedKey = (PlatformRenameItem)selectedItem;
+                if(settings.PlatformRenames.ContainsKey(selectedKey.key))
+                {
+                    dlgRenamePlatformDialog.PlatformName = selectedKey.value;
+                    if(dlgRenamePlatformDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        selectedKey.value = dlgRenamePlatformDialog.PlatformName;
+                        settings.PlatformRenames[selectedKey.key] = dlgRenamePlatformDialog.PlatformName;
+                        SaveSettings();
+                        lbPlatformNameAdjustment.Items[lbPlatformNameAdjustment.SelectedIndex] = lbPlatformNameAdjustment.SelectedItem;
+                        //RefreshPlatformNameAdjustmenList();
+                    }
+                }
+                else
+                {
+                    RefreshPlatformNameAdjustmenList();
+                }
+            }
+        }
+        private void btnRemovePlatformNameAdjustment_Click(object sender, EventArgs e)
+        {
+            object selectedItem = lbPlatformNameAdjustment.SelectedItem;
+            if (selectedItem != null)
+            {
+                PlatformRenameItem selectedKey = (PlatformRenameItem)selectedItem;
+                if (settings.PlatformRenames.ContainsKey(selectedKey.key))
+                {
+                    settings.PlatformRenames.Remove(selectedKey.key);
+                    SaveSettings();
+                    lbPlatformNameAdjustment.Items.Remove(selectedKey);
+                }
+                else
+                {
+                    RefreshPlatformNameAdjustmenList();
+                }
+            }
+        }
+        #endregion SteamShortcutNamesTab
+
 
         #region ProgramList
         private void UpdateLaunchOptionsList()
@@ -403,6 +762,23 @@ namespace GameLaunchProxy
             settings.logging = !settings.logging;
             loggingToolStripMenuItem.Checked = settings.logging;
             SaveSettings();
+        }
+    }
+
+    internal class PlatformRenameItem
+    {
+        public string key;
+        public string value;
+
+        public PlatformRenameItem(string key, string value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+
+        public override string ToString()
+        {
+            return key.PadRight(40) + "\t=>\t" + value.PadLeft(40);
         }
     }
 }

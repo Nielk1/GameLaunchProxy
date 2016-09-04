@@ -206,12 +206,41 @@ namespace Steam4NET
 		{
 			return this.GetFunction<NativeBAllowDesktopConfigByAppIDU>( this.Functions.BAllowDesktopConfigByAppID23 )( this.ObjectAddress, unAppID ); 
 		}
-		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeAddShortcutSSS( IntPtr thisptr, string arg0, string arg1, string arg2 );
-		public UInt32 AddShortcut( string arg0, string arg1, string arg2 ) 
+
+        //[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeAddShortcutSSSS( IntPtr thisptr, string arg0, string arg1, string arg2, string arg3);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeAddShortcutSSSS(IntPtr thisptr, IntPtr arg0, IntPtr arg1, IntPtr arg2, IntPtr arg3);
+        public UInt32 AddShortcut( string arg0, string arg1, string arg2, string arg3) 
 		{
-			return this.GetFunction<NativeAddShortcutSSS>( this.Functions.AddShortcut24 )( this.ObjectAddress, arg0, arg1, arg2 ); 
-		}
+            //return this.GetFunction<NativeAddShortcutSSSS>( this.Functions.AddShortcut24 )( this.ObjectAddress, arg0, arg1, arg2, arg3); 
+            byte[] _arg0 = Encoding.UTF8.GetBytes(arg0);
+            byte[] _arg1 = Encoding.UTF8.GetBytes(arg1);
+            byte[] _arg2 = Encoding.UTF8.GetBytes(arg2);
+            byte[] _arg3 = Encoding.UTF8.GetBytes(arg3);
+
+            IntPtr i_arg0 = Marshal.AllocHGlobal(_arg0.Length + 1);
+            IntPtr i_arg1 = Marshal.AllocHGlobal(_arg1.Length + 1);
+            IntPtr i_arg2 = Marshal.AllocHGlobal(_arg2.Length + 1);
+            IntPtr i_arg3 = Marshal.AllocHGlobal(_arg3.Length + 1);
+
+            Marshal.Copy(_arg0, 0, i_arg0, _arg0.Length);
+            Marshal.Copy(_arg1, 0, i_arg1, _arg1.Length);
+            Marshal.Copy(_arg2, 0, i_arg2, _arg2.Length);
+            Marshal.Copy(_arg3, 0, i_arg3, _arg3.Length);
+
+            Marshal.WriteByte(i_arg0, _arg0.Length, 0x00);
+            Marshal.WriteByte(i_arg1, _arg1.Length, 0x00);
+            Marshal.WriteByte(i_arg2, _arg2.Length, 0x00);
+            Marshal.WriteByte(i_arg3, _arg3.Length, 0x00);
+
+            UInt32 retVal = this.GetFunction<NativeAddShortcutSSSS>( this.Functions.AddShortcut24 )( this.ObjectAddress, i_arg0, i_arg1, i_arg2, i_arg3);
+
+            Marshal.FreeHGlobal(i_arg0);
+            Marshal.FreeHGlobal(i_arg1);
+            Marshal.FreeHGlobal(i_arg2);
+            Marshal.FreeHGlobal(i_arg3);
+
+            return retVal;
+        }
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeAddTemporaryShortcutSSS( IntPtr thisptr, string arg0, string arg1, string arg2 );
 		public UInt32 AddTemporaryShortcut( string arg0, string arg1, string arg2 ) 
@@ -219,11 +248,40 @@ namespace Steam4NET
 			return this.GetFunction<NativeAddTemporaryShortcutSSS>( this.Functions.AddTemporaryShortcut25 )( this.ObjectAddress, arg0, arg1, arg2 ); 
 		}
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeAddOpenVRShortcutSSS( IntPtr thisptr, string arg0, string arg1, string arg2 );
-		public UInt32 AddOpenVRShortcut( string arg0, string arg1, string arg2 ) 
+		//[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeAddOpenVRShortcutSSSS( IntPtr thisptr, string arg0, string arg1, string arg2, string arg3);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeAddOpenVRShortcutSSSS(IntPtr thisptr, IntPtr arg0, IntPtr arg1, IntPtr arg2, IntPtr arg3);
+        public UInt32 AddOpenVRShortcut( string arg0, string arg1, string arg2, string arg3) 
 		{
-			return this.GetFunction<NativeAddOpenVRShortcutSSS>( this.Functions.AddOpenVRShortcut26 )( this.ObjectAddress, arg0, arg1, arg2 ); 
-		}
+            //return this.GetFunction<NativeAddOpenVRShortcutSSSS>( this.Functions.AddOpenVRShortcut26 )( this.ObjectAddress, arg0, arg1, arg2, arg3); 
+            byte[] _arg0 = Encoding.UTF8.GetBytes(arg0);
+            byte[] _arg1 = Encoding.UTF8.GetBytes(arg1);
+            byte[] _arg2 = Encoding.UTF8.GetBytes(arg2);
+            byte[] _arg3 = Encoding.UTF8.GetBytes(arg3);
+
+            IntPtr i_arg0 = Marshal.AllocHGlobal(_arg0.Length + 1);
+            IntPtr i_arg1 = Marshal.AllocHGlobal(_arg1.Length + 1);
+            IntPtr i_arg2 = Marshal.AllocHGlobal(_arg2.Length + 1);
+            IntPtr i_arg3 = Marshal.AllocHGlobal(_arg3.Length + 1);
+
+            Marshal.Copy(_arg0, 0, i_arg0, _arg0.Length);
+            Marshal.Copy(_arg1, 0, i_arg1, _arg1.Length);
+            Marshal.Copy(_arg2, 0, i_arg2, _arg2.Length);
+            Marshal.Copy(_arg3, 0, i_arg3, _arg3.Length);
+
+            Marshal.WriteByte(i_arg0, _arg0.Length, 0x00);
+            Marshal.WriteByte(i_arg1, _arg1.Length, 0x00);
+            Marshal.WriteByte(i_arg2, _arg2.Length, 0x00);
+            Marshal.WriteByte(i_arg3, _arg3.Length, 0x00);
+
+            UInt32 retVal = this.GetFunction<NativeAddOpenVRShortcutSSSS>(this.Functions.AddOpenVRShortcut26)(this.ObjectAddress, i_arg0, i_arg1, i_arg2, i_arg3);
+
+            Marshal.FreeHGlobal(i_arg0);
+            Marshal.FreeHGlobal(i_arg1);
+            Marshal.FreeHGlobal(i_arg2);
+            Marshal.FreeHGlobal(i_arg3);
+
+            return retVal;
+        }
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutFromFullpathUS( IntPtr thisptr, UInt32 arg0, string arg1 );
 		public void SetShortcutFromFullpath( UInt32 arg0, string arg1 ) 
@@ -261,28 +319,28 @@ namespace Steam4NET
 			this.GetFunction<NativeClearShortcutUserTagsU>( this.Functions.ClearShortcutUserTags32 )( this.ObjectAddress, arg0 ); 
 		}
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeAddShortcutUserTagUS( IntPtr thisptr, UInt32 arg0, string arg1 );
-		public void AddShortcutUserTag( UInt32 arg0, string arg1 ) 
+		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeAddShortcutUserTagUS( IntPtr thisptr, UInt32 unAppID, string arg1 );
+		public void AddShortcutUserTag( UInt32 unAppID, string arg1 ) 
 		{
-			this.GetFunction<NativeAddShortcutUserTagUS>( this.Functions.AddShortcutUserTag33 )( this.ObjectAddress, arg0, arg1 ); 
+			this.GetFunction<NativeAddShortcutUserTagUS>( this.Functions.AddShortcutUserTag33 )( this.ObjectAddress, unAppID, arg1 ); 
 		}
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutHiddenUB( IntPtr thisptr, UInt32 arg0, [MarshalAs(UnmanagedType.I1)] bool arg1 );
-		public void SetShortcutHidden( UInt32 arg0, bool arg1 ) 
+		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutHiddenUB( IntPtr thisptr, UInt32 unAppID, [MarshalAs(UnmanagedType.I1)] bool arg1 );
+		public void SetShortcutHidden( UInt32 unAppID, bool arg1 ) 
 		{
-			this.GetFunction<NativeSetShortcutHiddenUB>( this.Functions.SetShortcutHidden34 )( this.ObjectAddress, arg0, arg1 ); 
+			this.GetFunction<NativeSetShortcutHiddenUB>( this.Functions.SetShortcutHidden34 )( this.ObjectAddress, unAppID, arg1 ); 
 		}
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetAllowDesktopConfigUB( IntPtr thisptr, UInt32 arg0, [MarshalAs(UnmanagedType.I1)] bool arg1 );
-		public void SetAllowDesktopConfig( UInt32 arg0, bool arg1 ) 
+		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetAllowDesktopConfigUB( IntPtr thisptr, UInt32 unAppID, [MarshalAs(UnmanagedType.I1)] bool arg1 );
+		public void SetAllowDesktopConfig( UInt32 unAppID, bool arg1 ) 
 		{
-			this.GetFunction<NativeSetAllowDesktopConfigUB>( this.Functions.SetAllowDesktopConfig35 )( this.ObjectAddress, arg0, arg1 ); 
+			this.GetFunction<NativeSetAllowDesktopConfigUB>( this.Functions.SetAllowDesktopConfig35 )( this.ObjectAddress, unAppID, arg1 ); 
 		}
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetOpenVRShortcutUB( IntPtr thisptr, UInt32 arg0, [MarshalAs(UnmanagedType.I1)] bool arg1 );
-		public void SetOpenVRShortcut( UInt32 arg0, bool arg1 ) 
+		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetOpenVRShortcutUB( IntPtr thisptr, UInt32 unAppID, [MarshalAs(UnmanagedType.I1)] bool arg1 );
+		public void SetOpenVRShortcut( UInt32 unAppID, bool arg1 ) 
 		{
-			this.GetFunction<NativeSetOpenVRShortcutUB>( this.Functions.SetOpenVRShortcut36 )( this.ObjectAddress, arg0, arg1 ); 
+			this.GetFunction<NativeSetOpenVRShortcutUB>( this.Functions.SetOpenVRShortcut36 )( this.ObjectAddress, unAppID, arg1 ); 
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeRemoveShortcutU( IntPtr thisptr, UInt32 arg0 );
