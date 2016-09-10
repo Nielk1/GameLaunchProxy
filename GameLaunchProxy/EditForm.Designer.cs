@@ -52,6 +52,15 @@
             this.ofdAddFont = new System.Windows.Forms.OpenFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageCore = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtCommand = new System.Windows.Forms.TextBox();
+            this.rbProxyBigPicture = new System.Windows.Forms.RadioButton();
+            this.rbProxySteam = new System.Windows.Forms.RadioButton();
+            this.rbProxyNormal = new System.Windows.Forms.RadioButton();
+            this.txtEmulator = new System.Windows.Forms.TextBox();
+            this.txtFrontEndShortcut = new System.Windows.Forms.RichTextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnLaunchBoxLibraryBrowse = new System.Windows.Forms.Button();
@@ -64,7 +73,10 @@
             this.btnSteamUserDataFind = new System.Windows.Forms.Button();
             this.tabSteamShortcutNames = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.btnAddDefault = new System.Windows.Forms.Button();
+            this.btnAddAllProxyShortcutsWithPlatformPrefix = new System.Windows.Forms.Button();
             this.btnRemoveAllProxyShortcuts = new System.Windows.Forms.Button();
             this.btnAddAllProxyShortcutsWithPlatform = new System.Windows.Forms.Button();
             this.btnAddPlatforms = new System.Windows.Forms.Button();
@@ -77,22 +89,6 @@
             this.pbScrapeLaunchBox = new System.Windows.Forms.ProgressBar();
             this.btnScrapeLaunchBox = new System.Windows.Forms.Button();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.btnAddNewSteamShortcut = new System.Windows.Forms.Button();
-            this.btnRemoveSteamShortcut = new System.Windows.Forms.Button();
-            this.lbSteamShortcuts = new System.Windows.Forms.ListBox();
-            this.txtLaunchBoxPath = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtSteamShortcutShortcut = new System.Windows.Forms.TextBox();
-            this.txtSteamShortcutTarget = new System.Windows.Forms.TextBox();
-            this.txtSteamShortcutName = new System.Windows.Forms.TextBox();
             this.ofdSteamUserDataShortcuts = new System.Windows.Forms.OpenFileDialog();
             this.ofdLaunchBoxLibrary = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -107,6 +103,7 @@
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCore.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -115,12 +112,6 @@
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -140,7 +131,7 @@
             this.splitContainer1.Panel2.AutoScroll = true;
             this.splitContainer1.Panel2.Controls.Add(this.tlpMainGrid);
             this.splitContainer1.Panel2MinSize = 400;
-            this.splitContainer1.Size = new System.Drawing.Size(795, 444);
+            this.splitContainer1.Size = new System.Drawing.Size(670, 264);
             this.splitContainer1.SplitterDistance = 150;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -152,13 +143,13 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(150, 444);
+            this.panel1.Size = new System.Drawing.Size(150, 264);
             this.panel1.TabIndex = 1;
             // 
             // btnAddProgram
             // 
             this.btnAddProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddProgram.Location = new System.Drawing.Point(75, 421);
+            this.btnAddProgram.Location = new System.Drawing.Point(75, 241);
             this.btnAddProgram.Name = "btnAddProgram";
             this.btnAddProgram.Size = new System.Drawing.Size(75, 23);
             this.btnAddProgram.TabIndex = 2;
@@ -170,7 +161,7 @@
             // 
             this.btnRemoveProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnRemoveProgram.Enabled = false;
-            this.btnRemoveProgram.Location = new System.Drawing.Point(0, 421);
+            this.btnRemoveProgram.Location = new System.Drawing.Point(0, 241);
             this.btnRemoveProgram.Name = "btnRemoveProgram";
             this.btnRemoveProgram.Size = new System.Drawing.Size(75, 23);
             this.btnRemoveProgram.TabIndex = 1;
@@ -187,7 +178,7 @@
             this.lbPrograms.HorizontalScrollbar = true;
             this.lbPrograms.Location = new System.Drawing.Point(0, 0);
             this.lbPrograms.Name = "lbPrograms";
-            this.lbPrograms.Size = new System.Drawing.Size(150, 407);
+            this.lbPrograms.Size = new System.Drawing.Size(150, 225);
             this.lbPrograms.TabIndex = 0;
             this.lbPrograms.SelectedIndexChanged += new System.EventHandler(this.lbPrograms_SelectedIndexChanged);
             // 
@@ -205,7 +196,7 @@
             this.tlpMainGrid.RowCount = 2;
             this.tlpMainGrid.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tlpMainGrid.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tlpMainGrid.Size = new System.Drawing.Size(644, 121);
+            this.tlpMainGrid.Size = new System.Drawing.Size(511, 121);
             this.tlpMainGrid.TabIndex = 2;
             // 
             // gbFonts
@@ -217,7 +208,7 @@
             this.gbFonts.Controls.Add(this.lbFont);
             this.gbFonts.Location = new System.Drawing.Point(3, 3);
             this.gbFonts.Name = "gbFonts";
-            this.gbFonts.Size = new System.Drawing.Size(638, 59);
+            this.gbFonts.Size = new System.Drawing.Size(505, 59);
             this.gbFonts.TabIndex = 1;
             this.gbFonts.TabStop = false;
             this.gbFonts.Text = "Install Temporary Fonts";
@@ -226,7 +217,7 @@
             // 
             this.btnRemoveFont.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveFont.Enabled = false;
-            this.btnRemoveFont.Location = new System.Drawing.Point(476, 30);
+            this.btnRemoveFont.Location = new System.Drawing.Point(343, 30);
             this.btnRemoveFont.Name = "btnRemoveFont";
             this.btnRemoveFont.Size = new System.Drawing.Size(75, 23);
             this.btnRemoveFont.TabIndex = 2;
@@ -238,7 +229,7 @@
             // 
             this.btnAddFont.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddFont.Enabled = false;
-            this.btnAddFont.Location = new System.Drawing.Point(557, 30);
+            this.btnAddFont.Location = new System.Drawing.Point(424, 30);
             this.btnAddFont.Name = "btnAddFont";
             this.btnAddFont.Size = new System.Drawing.Size(75, 23);
             this.btnAddFont.TabIndex = 1;
@@ -255,7 +246,7 @@
             this.lbFont.FormattingEnabled = true;
             this.lbFont.Location = new System.Drawing.Point(6, 19);
             this.lbFont.Name = "lbFont";
-            this.lbFont.Size = new System.Drawing.Size(626, 4);
+            this.lbFont.Size = new System.Drawing.Size(493, 4);
             this.lbFont.TabIndex = 0;
             // 
             // gbAggressiveFocus
@@ -267,7 +258,7 @@
             this.gbAggressiveFocus.Controls.Add(this.cbAggressiveFocus);
             this.gbAggressiveFocus.Location = new System.Drawing.Point(3, 68);
             this.gbAggressiveFocus.Name = "gbAggressiveFocus";
-            this.gbAggressiveFocus.Size = new System.Drawing.Size(638, 50);
+            this.gbAggressiveFocus.Size = new System.Drawing.Size(505, 50);
             this.gbAggressiveFocus.TabIndex = 2;
             this.gbAggressiveFocus.TabStop = false;
             this.gbAggressiveFocus.Text = "Aggressive Focus";
@@ -276,7 +267,7 @@
             // 
             this.nudAggressiveFocus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.nudAggressiveFocus.Enabled = false;
-            this.nudAggressiveFocus.Location = new System.Drawing.Point(555, 17);
+            this.nudAggressiveFocus.Location = new System.Drawing.Point(422, 17);
             this.nudAggressiveFocus.Name = "nudAggressiveFocus";
             this.nudAggressiveFocus.Size = new System.Drawing.Size(77, 20);
             this.nudAggressiveFocus.TabIndex = 2;
@@ -286,7 +277,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(463, 20);
+            this.label1.Location = new System.Drawing.Point(330, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(86, 13);
             this.label1.TabIndex = 1;
@@ -358,7 +349,6 @@
             this.tabControl1.Controls.Add(this.tabPageCore);
             this.tabControl1.Controls.Add(this.tabSteamShortcutNames);
             this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
             this.tabControl1.Name = "tabControl1";
@@ -369,6 +359,7 @@
             // tabPageCore
             // 
             this.tabPageCore.AutoScroll = true;
+            this.tabPageCore.Controls.Add(this.groupBox2);
             this.tabPageCore.Controls.Add(this.tableLayoutPanel1);
             this.tabPageCore.Location = new System.Drawing.Point(4, 22);
             this.tabPageCore.Name = "tabPageCore";
@@ -377,6 +368,113 @@
             this.tabPageCore.TabIndex = 2;
             this.tabPageCore.Text = "Core";
             this.tabPageCore.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.txtCommand);
+            this.groupBox2.Controls.Add(this.rbProxyBigPicture);
+            this.groupBox2.Controls.Add(this.rbProxySteam);
+            this.groupBox2.Controls.Add(this.rbProxyNormal);
+            this.groupBox2.Controls.Add(this.txtEmulator);
+            this.groupBox2.Controls.Add(this.txtFrontEndShortcut);
+            this.groupBox2.Location = new System.Drawing.Point(8, 66);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(662, 118);
+            this.groupBox2.TabIndex = 5;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Front End Shortcut";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(123, 47);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(72, 13);
+            this.label13.TabIndex = 7;
+            this.label13.Text = "Example Path";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(123, 21);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(48, 13);
+            this.label12.TabIndex = 6;
+            this.label12.Text = "Emulator";
+            // 
+            // txtCommand
+            // 
+            this.txtCommand.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtCommand.Location = new System.Drawing.Point(201, 44);
+            this.txtCommand.Name = "txtCommand";
+            this.txtCommand.Size = new System.Drawing.Size(455, 20);
+            this.txtCommand.TabIndex = 5;
+            this.txtCommand.Text = "emulator.exe \"FULL\\PATH\\TO\\ROM\\FILE\"";
+            this.txtCommand.TextChanged += new System.EventHandler(this.txtCommand_TextChanged);
+            // 
+            // rbProxyBigPicture
+            // 
+            this.rbProxyBigPicture.AutoSize = true;
+            this.rbProxyBigPicture.Location = new System.Drawing.Point(6, 65);
+            this.rbProxyBigPicture.Name = "rbProxyBigPicture";
+            this.rbProxyBigPicture.Size = new System.Drawing.Size(76, 17);
+            this.rbProxyBigPicture.TabIndex = 4;
+            this.rbProxyBigPicture.Text = "Big Picture";
+            this.rbProxyBigPicture.UseVisualStyleBackColor = true;
+            this.rbProxyBigPicture.CheckedChanged += new System.EventHandler(this.rbProxyType_CheckedChanged);
+            // 
+            // rbProxySteam
+            // 
+            this.rbProxySteam.AutoSize = true;
+            this.rbProxySteam.Location = new System.Drawing.Point(6, 42);
+            this.rbProxySteam.Name = "rbProxySteam";
+            this.rbProxySteam.Size = new System.Drawing.Size(55, 17);
+            this.rbProxySteam.TabIndex = 3;
+            this.rbProxySteam.Text = "Steam";
+            this.rbProxySteam.UseVisualStyleBackColor = true;
+            this.rbProxySteam.CheckedChanged += new System.EventHandler(this.rbProxyType_CheckedChanged);
+            // 
+            // rbProxyNormal
+            // 
+            this.rbProxyNormal.AutoSize = true;
+            this.rbProxyNormal.Checked = true;
+            this.rbProxyNormal.Location = new System.Drawing.Point(6, 19);
+            this.rbProxyNormal.Name = "rbProxyNormal";
+            this.rbProxyNormal.Size = new System.Drawing.Size(58, 17);
+            this.rbProxyNormal.TabIndex = 2;
+            this.rbProxyNormal.TabStop = true;
+            this.rbProxyNormal.Text = "Normal";
+            this.rbProxyNormal.UseVisualStyleBackColor = true;
+            this.rbProxyNormal.CheckedChanged += new System.EventHandler(this.rbProxyType_CheckedChanged);
+            // 
+            // txtEmulator
+            // 
+            this.txtEmulator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEmulator.Location = new System.Drawing.Point(201, 18);
+            this.txtEmulator.Name = "txtEmulator";
+            this.txtEmulator.Size = new System.Drawing.Size(455, 20);
+            this.txtEmulator.TabIndex = 1;
+            this.txtEmulator.Text = "X:\\path\\to\\emulator\\emulator.exe";
+            this.txtEmulator.TextChanged += new System.EventHandler(this.txtEmulator_TextChanged);
+            // 
+            // txtFrontEndShortcut
+            // 
+            this.txtFrontEndShortcut.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtFrontEndShortcut.Location = new System.Drawing.Point(6, 88);
+            this.txtFrontEndShortcut.Multiline = false;
+            this.txtFrontEndShortcut.Name = "txtFrontEndShortcut";
+            this.txtFrontEndShortcut.ReadOnly = true;
+            this.txtFrontEndShortcut.Size = new System.Drawing.Size(650, 20);
+            this.txtFrontEndShortcut.TabIndex = 0;
+            this.txtFrontEndShortcut.Text = "";
+            this.txtFrontEndShortcut.WordWrap = false;
             // 
             // tableLayoutPanel1
             // 
@@ -394,7 +492,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(676, 131);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(676, 60);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // panel4
@@ -405,7 +503,7 @@
             this.panel4.Location = new System.Drawing.Point(176, 30);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(500, 101);
+            this.panel4.Size = new System.Drawing.Size(500, 30);
             this.panel4.TabIndex = 4;
             // 
             // btnLaunchBoxLibraryBrowse
@@ -515,35 +613,73 @@
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Controls.Add(this.btnAddDefault, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.btnRemoveAllProxyShortcuts, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnAddAllProxyShortcutsWithPlatform, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnAddPlatforms, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label11, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label10, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnAddDefault, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.btnAddAllProxyShortcutsWithPlatformPrefix, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.btnRemoveAllProxyShortcuts, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.btnAddAllProxyShortcutsWithPlatform, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.btnAddPlatforms, 1, 3);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(8, 244);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(660, 57);
+            this.tableLayoutPanel3.RowCount = 4;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(660, 110);
             this.tableLayoutPanel3.TabIndex = 8;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label11.Location = new System.Drawing.Point(3, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(324, 20);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Normal Shortcut Management:";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label10.Location = new System.Drawing.Point(333, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(324, 20);
+            this.label10.TabIndex = 10;
+            this.label10.Text = "Use These If \'Rename\' Functionality Fails:";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnAddDefault
             // 
             this.btnAddDefault.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnAddDefault.Location = new System.Drawing.Point(3, 3);
+            this.btnAddDefault.Location = new System.Drawing.Point(3, 23);
             this.btnAddDefault.Name = "btnAddDefault";
-            this.btnAddDefault.Size = new System.Drawing.Size(324, 22);
+            this.btnAddDefault.Size = new System.Drawing.Size(324, 24);
             this.btnAddDefault.TabIndex = 8;
             this.btnAddDefault.Text = "Add Default";
             this.btnAddDefault.UseVisualStyleBackColor = true;
             this.btnAddDefault.Click += new System.EventHandler(this.btnAddDefault_Click);
             // 
+            // btnAddAllProxyShortcutsWithPlatformPrefix
+            // 
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.Location = new System.Drawing.Point(333, 23);
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.Name = "btnAddAllProxyShortcutsWithPlatformPrefix";
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.Size = new System.Drawing.Size(324, 24);
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.TabIndex = 9;
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.Text = "Add All Proxy Shortcuts with [Platform Prefix]";
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.UseVisualStyleBackColor = true;
+            this.btnAddAllProxyShortcutsWithPlatformPrefix.Click += new System.EventHandler(this.btnAddAllProxyShortcutsWithPlatformPrefix_Click);
+            // 
             // btnRemoveAllProxyShortcuts
             // 
             this.btnRemoveAllProxyShortcuts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnRemoveAllProxyShortcuts.Location = new System.Drawing.Point(333, 31);
+            this.btnRemoveAllProxyShortcuts.Location = new System.Drawing.Point(3, 53);
             this.btnRemoveAllProxyShortcuts.Name = "btnRemoveAllProxyShortcuts";
-            this.btnRemoveAllProxyShortcuts.Size = new System.Drawing.Size(324, 23);
+            this.btnRemoveAllProxyShortcuts.Size = new System.Drawing.Size(324, 24);
             this.btnRemoveAllProxyShortcuts.TabIndex = 2;
             this.btnRemoveAllProxyShortcuts.Text = "Remove All Proxy Shortcuts from Steam";
             this.btnRemoveAllProxyShortcuts.UseVisualStyleBackColor = true;
@@ -552,20 +688,20 @@
             // btnAddAllProxyShortcutsWithPlatform
             // 
             this.btnAddAllProxyShortcutsWithPlatform.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnAddAllProxyShortcutsWithPlatform.Location = new System.Drawing.Point(3, 31);
+            this.btnAddAllProxyShortcutsWithPlatform.Location = new System.Drawing.Point(333, 53);
             this.btnAddAllProxyShortcutsWithPlatform.Name = "btnAddAllProxyShortcutsWithPlatform";
-            this.btnAddAllProxyShortcutsWithPlatform.Size = new System.Drawing.Size(324, 23);
+            this.btnAddAllProxyShortcutsWithPlatform.Size = new System.Drawing.Size(324, 24);
             this.btnAddAllProxyShortcutsWithPlatform.TabIndex = 3;
-            this.btnAddAllProxyShortcutsWithPlatform.Text = "Add All Proxy Shortcuts with Platform Suffix";
+            this.btnAddAllProxyShortcutsWithPlatform.Text = "Add All Proxy Shortcuts with (Platform Suffix)";
             this.btnAddAllProxyShortcutsWithPlatform.UseVisualStyleBackColor = true;
             this.btnAddAllProxyShortcutsWithPlatform.Click += new System.EventHandler(this.btnAddAllProxyShortcutsWithPlatform_Click);
             // 
             // btnAddPlatforms
             // 
             this.btnAddPlatforms.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnAddPlatforms.Location = new System.Drawing.Point(333, 3);
+            this.btnAddPlatforms.Location = new System.Drawing.Point(333, 83);
             this.btnAddPlatforms.Name = "btnAddPlatforms";
-            this.btnAddPlatforms.Size = new System.Drawing.Size(324, 22);
+            this.btnAddPlatforms.Size = new System.Drawing.Size(324, 24);
             this.btnAddPlatforms.TabIndex = 7;
             this.btnAddPlatforms.Text = "Add Platforms";
             this.btnAddPlatforms.UseVisualStyleBackColor = true;
@@ -678,197 +814,10 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(801, 450);
+            this.tabPage1.Size = new System.Drawing.Size(676, 270);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Launch Options";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.splitContainer2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(801, 450);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Steam Shortcut";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer2.Location = new System.Drawing.Point(3, 3);
-            this.splitContainer2.Name = "splitContainer2";
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.panel2);
-            this.splitContainer2.Panel1MinSize = 150;
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.txtLaunchBoxPath);
-            this.splitContainer2.Panel2.Controls.Add(this.label7);
-            this.splitContainer2.Panel2.Controls.Add(this.label6);
-            this.splitContainer2.Panel2.Controls.Add(this.label5);
-            this.splitContainer2.Panel2.Controls.Add(this.label4);
-            this.splitContainer2.Panel2.Controls.Add(this.label3);
-            this.splitContainer2.Panel2.Controls.Add(this.label2);
-            this.splitContainer2.Panel2.Controls.Add(this.txtSteamShortcutShortcut);
-            this.splitContainer2.Panel2.Controls.Add(this.txtSteamShortcutTarget);
-            this.splitContainer2.Panel2.Controls.Add(this.txtSteamShortcutName);
-            this.splitContainer2.Panel2MinSize = 400;
-            this.splitContainer2.Size = new System.Drawing.Size(795, 444);
-            this.splitContainer2.SplitterDistance = 150;
-            this.splitContainer2.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.btnAddNewSteamShortcut);
-            this.panel2.Controls.Add(this.btnRemoveSteamShortcut);
-            this.panel2.Controls.Add(this.lbSteamShortcuts);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(150, 444);
-            this.panel2.TabIndex = 2;
-            // 
-            // btnAddNewSteamShortcut
-            // 
-            this.btnAddNewSteamShortcut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddNewSteamShortcut.Location = new System.Drawing.Point(75, 421);
-            this.btnAddNewSteamShortcut.Name = "btnAddNewSteamShortcut";
-            this.btnAddNewSteamShortcut.Size = new System.Drawing.Size(75, 23);
-            this.btnAddNewSteamShortcut.TabIndex = 2;
-            this.btnAddNewSteamShortcut.Text = "Add New";
-            this.btnAddNewSteamShortcut.UseVisualStyleBackColor = true;
-            this.btnAddNewSteamShortcut.Click += new System.EventHandler(this.btnAddNewSteamShortcut_Click);
-            // 
-            // btnRemoveSteamShortcut
-            // 
-            this.btnRemoveSteamShortcut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnRemoveSteamShortcut.Enabled = false;
-            this.btnRemoveSteamShortcut.Location = new System.Drawing.Point(0, 421);
-            this.btnRemoveSteamShortcut.Name = "btnRemoveSteamShortcut";
-            this.btnRemoveSteamShortcut.Size = new System.Drawing.Size(75, 23);
-            this.btnRemoveSteamShortcut.TabIndex = 1;
-            this.btnRemoveSteamShortcut.Text = "Remove";
-            this.btnRemoveSteamShortcut.UseVisualStyleBackColor = true;
-            this.btnRemoveSteamShortcut.Click += new System.EventHandler(this.btnRemoveSteamShortcut_Click);
-            // 
-            // lbSteamShortcuts
-            // 
-            this.lbSteamShortcuts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbSteamShortcuts.FormattingEnabled = true;
-            this.lbSteamShortcuts.HorizontalScrollbar = true;
-            this.lbSteamShortcuts.Location = new System.Drawing.Point(0, 0);
-            this.lbSteamShortcuts.Name = "lbSteamShortcuts";
-            this.lbSteamShortcuts.Size = new System.Drawing.Size(150, 407);
-            this.lbSteamShortcuts.TabIndex = 0;
-            this.lbSteamShortcuts.SelectedIndexChanged += new System.EventHandler(this.lbSteamShortcuts_SelectedIndexChanged);
-            // 
-            // txtLaunchBoxPath
-            // 
-            this.txtLaunchBoxPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLaunchBoxPath.Location = new System.Drawing.Point(102, 419);
-            this.txtLaunchBoxPath.Name = "txtLaunchBoxPath";
-            this.txtLaunchBoxPath.ReadOnly = true;
-            this.txtLaunchBoxPath.Size = new System.Drawing.Size(534, 20);
-            this.txtLaunchBoxPath.TabIndex = 9;
-            // 
-            // label7
-            // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 422);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(93, 13);
-            this.label7.TabIndex = 8;
-            this.label7.Text = "Path for Front End";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 78);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(331, 39);
-            this.label6.TabIndex = 7;
-            this.label6.Text = "Add the Target as a third party game on Steam.\r\nBe sure the Name and Target match" +
-    " between Steam and the above.\r\nYou may customize these values but they must matc" +
-    "h.";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(80, 58);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(102, 13);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "steam://rungameid/";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 58);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(47, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Shortcut";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 32);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Target";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 6);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Name";
-            // 
-            // txtSteamShortcutShortcut
-            // 
-            this.txtSteamShortcutShortcut.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSteamShortcutShortcut.Enabled = false;
-            this.txtSteamShortcutShortcut.Location = new System.Drawing.Point(182, 55);
-            this.txtSteamShortcutShortcut.Name = "txtSteamShortcutShortcut";
-            this.txtSteamShortcutShortcut.Size = new System.Drawing.Size(454, 20);
-            this.txtSteamShortcutShortcut.TabIndex = 2;
-            this.txtSteamShortcutShortcut.TextChanged += new System.EventHandler(this.txtSteamShortcutShortcut_TextChanged);
-            // 
-            // txtSteamShortcutTarget
-            // 
-            this.txtSteamShortcutTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSteamShortcutTarget.Enabled = false;
-            this.txtSteamShortcutTarget.Location = new System.Drawing.Point(83, 29);
-            this.txtSteamShortcutTarget.Name = "txtSteamShortcutTarget";
-            this.txtSteamShortcutTarget.Size = new System.Drawing.Size(553, 20);
-            this.txtSteamShortcutTarget.TabIndex = 1;
-            this.txtSteamShortcutTarget.TextChanged += new System.EventHandler(this.txtSteamShortcutTarget_TextChanged);
-            // 
-            // txtSteamShortcutName
-            // 
-            this.txtSteamShortcutName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSteamShortcutName.Enabled = false;
-            this.txtSteamShortcutName.Location = new System.Drawing.Point(83, 3);
-            this.txtSteamShortcutName.Name = "txtSteamShortcutName";
-            this.txtSteamShortcutName.Size = new System.Drawing.Size(553, 20);
-            this.txtSteamShortcutName.TabIndex = 0;
-            this.txtSteamShortcutName.TextChanged += new System.EventHandler(this.txtSteamShortcutName_TextChanged);
             // 
             // ofdSteamUserDataShortcuts
             // 
@@ -905,6 +854,8 @@
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPageCore.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.panel4.ResumeLayout(false);
@@ -913,16 +864,10 @@
             this.panel3.PerformLayout();
             this.tabSteamShortcutNames.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            this.splitContainer2.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -952,22 +897,6 @@
         private System.Windows.Forms.Button btnRemoveProgram;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button btnAddNewSteamShortcut;
-        private System.Windows.Forms.Button btnRemoveSteamShortcut;
-        private System.Windows.Forms.ListBox lbSteamShortcuts;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtSteamShortcutShortcut;
-        private System.Windows.Forms.TextBox txtSteamShortcutTarget;
-        private System.Windows.Forms.TextBox txtSteamShortcutName;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox txtLaunchBoxPath;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ToolStripMenuItem loggingToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPageCore;
         private System.Windows.Forms.Button btnSteamUserDataBrowse;
@@ -996,6 +925,18 @@
         private System.Windows.Forms.Button btnAddPlatforms;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button btnAddDefault;
+        private System.Windows.Forms.Button btnAddAllProxyShortcutsWithPlatformPrefix;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.RadioButton rbProxyBigPicture;
+        private System.Windows.Forms.RadioButton rbProxySteam;
+        private System.Windows.Forms.RadioButton rbProxyNormal;
+        private System.Windows.Forms.TextBox txtEmulator;
+        private System.Windows.Forms.RichTextBox txtFrontEndShortcut;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox txtCommand;
     }
 }
 

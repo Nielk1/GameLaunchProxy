@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Management;
 
 namespace GameLaunchProxy
 {
@@ -74,6 +75,8 @@ namespace GameLaunchProxy
             public string Program;
             public string Args;
             public UInt64 ShortcutID;
+
+            public int? AggressiveFocus;
         }
         #endregion Data Structures
 
@@ -110,8 +113,7 @@ namespace GameLaunchProxy
                     // anything after the command -proxy is treated as part of the proxy.
 
                     #region Clean Up Stuck Old Run
-                    CleanupSteamRename();
-
+                    CleanupLaunchedGame();
                     #endregion Clean Up Stuck Old Run
 
                     #region Break Up Arguments
@@ -128,7 +130,12 @@ namespace GameLaunchProxy
 
                     #region Process Arguments
                     bool steam = ProxyArgs.Contains("-steam");
-                    bool bigpicture = steam = ProxyArgs.Contains("-steambigpicture");
+                    bool bigpicture = false;
+                    if(ProxyArgs.Contains("-steambigpicture"))
+                    {
+                        steam = true;
+                        bigpicture = true;
+                    }
                     string rom = null;
                     int indexOfRomArg = -1;
                     if ((indexOfRomArg = ProxyArgs.IndexOf("-rom")) > -1)
@@ -173,8 +180,11 @@ namespace GameLaunchProxy
                     // lookup an entry to do work for, swap out dictionary system for a raw list with a regex scan.
                     // Sure it's slow but such customziation is rare.
 
+                    GameRestoreData gameRestoreData = new GameRestoreData();
+
                     if (steam)
                     {
+                        #region Clean Up Names
                         string cleanname = Path.GetFileNameWithoutExtension(rom);
                         string cleanplatformname = string.Empty;
                         if (name.Contains("%gamename%") || name.Contains("%platformname%") || fallBackName.Contains("%gamename%") || fallBackName.Contains("%platformname%"))
@@ -204,6 +214,14 @@ namespace GameLaunchProxy
                             }
                         }
 
+                        if(!string.IsNullOrWhiteSpace(cleanplatformname))
+                        {
+                            if(settings.PlatformRenames.ContainsKey(cleanplatformname))
+                            {
+                                cleanplatformname = settings.PlatformRenames[cleanplatformname];
+                            }
+                        }
+
                         if (name == null)
                         {
                             name = "%gamename%";
@@ -225,22 +243,27 @@ namespace GameLaunchProxy
                             LogMessage($"New -name\t{name}");
                         }
 
-                        fallBackName = fallBackName.Trim('"');
-                        if (fallBackName.Contains("%gamename%") || fallBackName.Contains("%platformname%"))
+                        if (!string.IsNullOrWhiteSpace(fallBackName))
                         {
-                            LogMessage($"-fallbackname Contains %gamename% or %platformname%");
+                            fallBackName = fallBackName.Trim('"');
+                            if (fallBackName.Contains("%gamename%") || fallBackName.Contains("%platformname%"))
+                            {
+                                LogMessage($"-fallbackname Contains %gamename% or %platformname%");
 
-                            while (fallBackName.Contains("%gamename%"))
-                            {
-                                fallBackName = fallBackName.Replace("%gamename%", cleanname);
+                                while (fallBackName.Contains("%gamename%"))
+                                {
+                                    fallBackName = fallBackName.Replace("%gamename%", cleanname);
+                                }
+                                while (fallBackName.Contains("%platformname%"))
+                                {
+                                    fallBackName = fallBackName.Replace("%platformname%", cleanplatformname);
+                                }
+                                LogMessage($"New -fallbackname\t{fallBackName}");
                             }
-                            while (fallBackName.Contains("%platformname%"))
-                            {
-                                fallBackName = fallBackName.Replace("%platformname%", cleanplatformname);
-                            }
-                            LogMessage($"New -fallbackname\t{fallBackName}");
                         }
+                        #endregion Clean Up Names
 
+                        #region Find Shortcut
                         string proxyPath;
                         {
                             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
@@ -272,11 +295,14 @@ namespace GameLaunchProxy
 
                                 if (steamShortcutId != 0)
                                 {
-                                    File.WriteAllText("SteamName.restore", steamShortcutId + "\r\n" + names[x].Item1);
+                                    gameRestoreData.SteamShortcutID = steamShortcutId;
+                                    gameRestoreData.OldSteamShortcutname = names[x].Item1;
+                                    File.WriteAllText("GameRestoreData.json", JsonConvert.SerializeObject(gameRestoreData));
                                     break; // loop will terminate anyway but why not
                                 }
                             }
                         }
+                        #endregion Find Shortcut
 
                         if (steamShortcutId == 0)
                         {
@@ -290,20 +316,22 @@ namespace GameLaunchProxy
                         }
 
                         // create steamproxy.json file
+                        // save data about launch item into temporary data
+                        SteamProxyData steamProxy = new SteamProxyData()
                         {
-                            // save data about launch item into temporary data
-                            SteamProxyData steamProxy = new SteamProxyData()
-                            {
-                                Program = EmulatorArgs[0].StartsWith("\"") && EmulatorArgs[0].EndsWith("\"") ? EmulatorArgs[0].Substring(1, EmulatorArgs[0].Length - 2) : EmulatorArgs[0],
-                                Args = string.Join(" ", EmulatorArgs.Skip(1)),
-                                ShortcutID = steamShortcutId
-                            };
-                            File.WriteAllText("steamproxy.json", JsonConvert.SerializeObject(steamProxy));
+                            Program = EmulatorArgs[0].StartsWith("\"") && EmulatorArgs[0].EndsWith("\"") ? EmulatorArgs[0].Substring(1, EmulatorArgs[0].Length - 2) : EmulatorArgs[0],
+                            Args = string.Join(" ", EmulatorArgs.Skip(1)),
+                            ShortcutID = steamShortcutId
+                        };
 
-                            LogMessage($"steamproxy.json contents");
-                            LogMessage(JsonConvert.SerializeObject(steamProxy));
-                        }
+                        ProgramSettings programSettings = LoadProgramSettings(steamProxy.Program);
 
+                        gameRestoreData.AddedFonts = SetupFonts(programSettings);
+                        File.WriteAllText("GameRestoreData.json", JsonConvert.SerializeObject(gameRestoreData));
+                        LogMessage($"GameRestoreData.json\t{JsonConvert.SerializeObject(gameRestoreData)}");
+                        steamProxy.AggressiveFocus = programSettings != null ? programSettings.AggressiveFocus : null;
+                        File.WriteAllText("steamproxy.json", JsonConvert.SerializeObject(steamProxy));
+                        LogMessage($"steamproxy.json\t{JsonConvert.SerializeObject(steamProxy)}");
 
                         bool AlreadyInBigPicture = SteamContext.GetInstance().BigPicturePID != 0;
                         SetupBigPicture(bigpicture && !AlreadyInBigPicture);
@@ -327,19 +355,19 @@ namespace GameLaunchProxy
                             LogMessage($"found process to wait on\t{LookingForProc.ProcessName}");
 
                             Thread.Sleep(1000);
-                            LookingForProc.WaitForExit();
-                            Thread.Sleep(1000);
+                            //LookingForProc.WaitForExit();
+                            //Thread.Sleep(1000);
 
 
-                            //for(;;)
-                            //{
-                            //    Thread.Sleep(1000);
-                            //    if (!LookingForProc.IsRunning())
-                            //    {
-                            //        break;
-                            //    }
-                            //    //LogMessage($"Proc Still Here");
-                            //}
+                            for(;;)
+                            {
+                                Thread.Sleep(1000);
+                                if (!LookingForProc.IsRunning())
+                                {
+                                    break;
+                                }
+                                //LogMessage($"Proc Still Here");
+                            }
 
 
 
@@ -354,7 +382,7 @@ namespace GameLaunchProxy
 
                         CleanupBigPicture(bigpicture, AlreadyInBigPicture);
 
-                        CleanupSteamRename();
+                        CleanupLaunchedGame();
                     }
                     else
                     {
@@ -366,25 +394,14 @@ namespace GameLaunchProxy
 
                         if (File.Exists(programPath))
                         {
-                            //ProgramSettings programSettings = LoadProgramSettings(programPath);
-                            //List<string> AddedFonts = SetupFonts(programSettings);
-                            //StartProgram(programSettings, programPath, programArgs); // and wait for it to finish
-                            //CleanupFonts(AddedFonts);
-                            StartProgramTemporarySimplified(programPath, programArgs); // and wait for it to finish
+                            ProgramSettings programSettings = LoadProgramSettings(programPath);
+
+                            gameRestoreData.AddedFonts = SetupFonts(programSettings);
+                            File.WriteAllText("GameRestoreData.json", JsonConvert.SerializeObject(gameRestoreData));
+
+                            StartProgram(programPath, programArgs, programSettings != null ? programSettings.AggressiveFocus : null); // and wait for it to finish
                         }
                     }
-                }
-                else if (args.Contains("-steamproxysetup")) // old
-                {
-                    SteamProxySetup(args);
-                }
-                else if (args.Contains("-steamproxyactivate")) // old
-                {
-                    SteamProxyActivate(args);
-                }
-                else // old
-                {
-                    GenericProxy(args);
                 }
             }
             else
@@ -402,7 +419,7 @@ namespace GameLaunchProxy
         {
             if (instanceID != null) File.AppendAllText("GameLaunchProxy.log", instanceID + "\t" + message + "\r\n");
         }
-        private static void StartProgramTemporarySimplified(string programPath, string programArgs)
+        private static void StartProgram(string programPath, string programArgs, int? AggressiveFocus)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
@@ -418,397 +435,67 @@ namespace GameLaunchProxy
 
             Process runningProc = Process.Start(startInfo);
 
-            runningProc.WaitForExit();
-            /*for(;;)
+            if (AggressiveFocus.HasValue)
             {
-                if(!runningProc.IsRunning())
+                int secondsOfAggression = 0;
+                do
                 {
-                    break;
-                }
-                if (alreadyCleaning)
-                {
-                    if (!runningProc.IsRunning())
                     {
-                        runningProc.Close();
+                        IntPtr hwnd = runningProc.MainWindowHandle;
+                        if (hwnd == IntPtr.Zero)
+                        {
+                            //the window is hidden so try to restore it before setting focus.
+                            ShowWindow(runningProc.Handle, ShowWindowEnum.Restore);
+                        }
+
+                        //set user the focus to the window
+                        SetForegroundWindow(runningProc.MainWindowHandle);
                     }
+                    Thread.Sleep(1000);
+                    secondsOfAggression++;
+                } while (secondsOfAggression <= AggressiveFocus.Value);
+            }
+
+            //runningProc.WaitForExit();
+            for (;;)
+            {
+                Thread.Sleep(1000);
+                if (!runningProc.IsRunning())
+                {
                     break;
                 }
-                Thread.Sleep(1000);
-            }*/
+                //LogMessage($"Proc Still Here");
+            }
 
             LogMessage($"Ended Program Normally");
         }
 
-        private static void CleanupSteamRename()
+        private static void CleanupLaunchedGame()
         {
-            if (File.Exists("SteamName.restore"))
+            if (File.Exists("GameRestoreData.json"))
             {
                 LogMessage("Restoring old Steam shortcut name");
 
-                string[] lines = File.ReadAllLines("SteamName.restore");
-                UInt64 shortcutID = UInt64.Parse(lines[0]);
+                GameRestoreData restoreData = JsonConvert.DeserializeObject<GameRestoreData>(File.ReadAllText("GameRestoreData.json"));
+
+                CleanupFonts(restoreData.AddedFonts);
+
+                UInt64 shortcutID = restoreData.SteamShortcutID;
+                if(shortcutID > 0 && !string.IsNullOrWhiteSpace(restoreData.OldSteamShortcutname))
                 try
                 {
-                    SteamContext.GetInstance().RenameLiveShortcut(shortcutID, lines[1]);
+                    SteamContext.GetInstance().RenameLiveShortcut(shortcutID, restoreData.OldSteamShortcutname);
                 }
                 catch
                 {
                     LogMessage("Failed to restore Steam shortcut name");
                     MessageBox.Show("Error occured trying to restore shortcut name.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                finally
-                {
-                    File.Delete("SteamName.restore");
-                }
+
+                File.Delete("GameRestoreData.json");
             }
         }
-
-        private static void SteamProxySetup(string[] args)
-        {
-            LogMessage($"Mode SteamProxySetup");
-            using (var mutex = new Mutex(false, mutex_id + "SteamProxySetup"))
-            {
-                try
-                {
-                    #region Mutex for SteamProxySetup
-                    try
-                    {
-                        if (!mutex.WaitOne(TimeSpan.FromSeconds(5), false))
-                        {
-                            LogMessage($"Mutex Aquisition Failed");
-                            MessageBox.Show("GameLaunchProxy is already running in SteamProxySetup mode", "Steam Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Environment.Exit(0);
-                        }
-                    }
-                    catch (AbandonedMutexException)
-                    {
-                        // Log the fact the mutex was abandoned in another process, it will still get aquired
-                    }
-                    #endregion Mutex for SteamProxySetup
-
-                    #region Read -steamproxysetup
-                    int CLI_steamproxysetup_Index = 0;
-                    for (; CLI_steamproxysetup_Index < args.Length; CLI_steamproxysetup_Index++)
-                    {
-                        if (args[CLI_steamproxysetup_Index] == "-steamproxysetup")
-                            break;
-                    }
-                    CLI_steamproxysetup_Index++;
-                    string CLI_steamproxysetup = null;
-                    if (CLI_steamproxysetup_Index < args.Length)
-                    {
-                        CLI_steamproxysetup = args[CLI_steamproxysetup_Index];
-                    }
-                    // steamShortcutID is now known
-                    #endregion Read -steamproxysetup
-
-                    #region Read -steamproxyname
-                    int CLI_steamproxyname_Index = 0;
-                    for (; CLI_steamproxyname_Index < args.Length; CLI_steamproxyname_Index++)
-                    {
-                        if (args[CLI_steamproxyname_Index] == "-steamproxyname")
-                            break;
-                    }
-                    CLI_steamproxyname_Index++;
-                    string CLI_steamproxyname = null;
-                    if (CLI_steamproxyname_Index < args.Length)
-                    {
-                        CLI_steamproxyname = args[CLI_steamproxyname_Index];
-                    }
-                    // steamShortcutName is now known
-                    #endregion Read -steamproxyname
-
-                    #region Read -steamproxyhold REMOVED
-                    //bool steamProxyHold = false;
-                    //if (args.Contains("-steamproxyhold"))
-                    //{
-                    //    steamProxyHold = true;
-                    //}
-                    #endregion Read -steamproxyhold REMOVED
-
-                    #region Read -steamproxyforcebigpicture
-                    bool CLI_steamproxyforcebigpicture = false;
-                    if (args.Contains("-steamproxyforcebigpicture"))
-                    {
-                        CLI_steamproxyforcebigpicture = true;
-                    }
-                    #endregion Read -steamproxyforcebigpicture
-
-                    #region Read -steamproxyclosebigpicture
-                    bool CLI_steamproxyclosebigpicture = false;
-                    if (args.Contains("-steamproxyclosebigpicture"))
-                    {
-                        CLI_steamproxyclosebigpicture = true;
-                    }
-                    #endregion Read -steamproxyclosebigpicture
-
-                    // need to be sure we have a working ID
-                    if (CLI_steamproxysetup != null && CLI_steamproxysetup.Length > 0)
-                    {
-                        // clean unneeded CLI args
-                        int argCounter = 0;
-                        string rawCommandLine = Environment.CommandLine;
-                        List<string> rawArgList = Regex.Matches(rawCommandLine, @"[\""].+?[\""]|[^ ]+")
-                                                        .Cast<Match>()
-                                                        .Select(m => m.Value)
-                                                        .Skip(1)
-                                                        .ToList();
-                        List<string> argList = rawArgList.Select(arg =>
-                        {
-                            if ((argCounter == CLI_steamproxysetup_Index)
-                            || (argCounter == (CLI_steamproxysetup_Index - 1))
-                            || (argCounter == CLI_steamproxyname_Index)
-                            || (argCounter == (CLI_steamproxyname_Index - 1)))
-                            {
-                                argCounter++;
-                                return null;
-                            }
-                            argCounter++;
-                            if (arg == "-steamproxyhold") return null; // still trimming this old shortcut but we should remove this later
-                            if (arg == "-steamproxyforcebigpicture") return null;
-                            if (arg == "-steamproxyclosebigpicture") return null;
-                            return arg;
-                        }).Where(arg => arg != null).ToList();
-
-                        #region Adjust Shortcut Name
-                        if (!string.IsNullOrWhiteSpace(CLI_steamproxyname))
-                        {
-                            if (CLI_steamproxyname.Contains("%cleanromname%"))
-                            {
-                                LogMessage($"-steamproxyname Contains %cleanromname%");
-
-                                // assuming last argument is rom path
-                                string cleanromname = Path.GetFileNameWithoutExtension(argList.Last().Trim('"'));
-                                while (CLI_steamproxyname.Contains("%cleanromname%"))
-                                {
-                                    CLI_steamproxyname = CLI_steamproxyname.Replace("%cleanromname%", cleanromname);
-                                }
-
-                                LogMessage($"New -steamproxyname\t{CLI_steamproxyname}");
-                            }
-                        }
-                        #endregion Adjust Shortcut Name
-
-                        LogMessage($"Looking for shortcut in database that ends with -steamproxyactivate {CLI_steamproxysetup}");
-                        SteamShortcutSettings knownShortcut = settings.SteamShortcuts.Where(shortDat => shortDat.LaunchPath.ToLowerInvariant().EndsWith($"-steamproxyactivate {CLI_steamproxysetup}".ToLowerInvariant())).FirstOrDefault();
-
-                        if (knownShortcut != null)
-                        {
-                            LogMessage($"Found Shortcut");
-
-                            // note, this ID is invalid if the name has changed since the shortcut was made, so if steam integration is offline this won't work
-                            UInt64 steamShortcutId = knownShortcut.ID;
-
-                            // try to init steamworks
-                            //try { SteamContext.Init(); } catch { }
-
-                            // set shortcut name
-                            try
-                            {
-                                if (!string.IsNullOrWhiteSpace(CLI_steamproxyname))
-                                {
-                                    SteamContext.GetInstance().SetShortcutName(steamShortcutId, CLI_steamproxysetup, CLI_steamproxyname); // agressivly try to find that shortcut
-                                    LogMessage($"set shortcut name\t{CLI_steamproxyname}");
-                                }
-                            }
-                            catch { }
-
-                            // get the new shortcut ID due to the rename
-                            try { steamShortcutId = SteamContext.GetInstance().FindShortcut(steamShortcutId, CLI_steamproxysetup); } catch { }
-
-                            // save data about launch item into temporary data
-                            SteamProxyData steamProxy = new SteamProxyData()
-                            {
-                                Program = argList[0].StartsWith("\"") && argList[0].EndsWith("\"") ? argList[0].Substring(1, argList[0].Length - 2) : argList[0],
-                                Args = string.Join(" ", argList.Skip(1)),
-                                ShortcutID = steamShortcutId
-                            };
-                            File.WriteAllText("steamproxy.json", JsonConvert.SerializeObject(steamProxy));
-
-                            LogMessage($"steamproxy.json contents");
-                            LogMessage(JsonConvert.SerializeObject(steamProxy));
-
-
-                            ProgramSettings programSettings = LoadProgramSettings(steamProxy.Program);
-                            List<string> AddedFonts = SetupFonts(programSettings);
-                            SetupBigPicture(CLI_steamproxyforcebigpicture);
-
-                            LogMessage($"start\tsteam://rungameid/{steamShortcutId}");
-                            Process.Start($"steam://rungameid/{steamShortcutId}");
-
-                            Process LookingForProc = null;
-                            for (int tries = 0; tries < 10; tries++)
-                            {
-                                Thread.Sleep(1000);
-
-                                Process[] procs = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(argList[0].Trim('"')));
-                                LookingForProc = procs.FirstOrDefault();
-
-                                if (LookingForProc != null) break;
-                            }
-                            if (LookingForProc != null)
-                            {
-                                LogMessage($"found process to wait on\t{LookingForProc.ProcessName}");
-
-                                Thread.Sleep(1000);
-                                LookingForProc.WaitForExit();
-                                Thread.Sleep(1000);
-
-
-                                //for(;;)
-                                //{
-                                //    Thread.Sleep(1000);
-                                //    if (!LookingForProc.IsRunning())
-                                //    {
-                                //        break;
-                                //    }
-                                //    //LogMessage($"Proc Still Here");
-                                //}
-
-
-
-                                LogMessage($"ended\tsteam://rungameid/{steamShortcutId}");
-                            }
-                            else
-                            {
-                                LogMessage($"failed to catch process from steam");
-                            }
-
-                            Thread.Sleep(1000);
-
-                            CleanupBigPicture(CLI_steamproxyclosebigpicture);
-
-                            try
-                            {
-                                if (steamShortcutId > 0)
-                                {
-                                    SteamContext.GetInstance().SetShortcutName(steamShortcutId, CLI_steamproxysetup, knownShortcut.Name);
-                                    LogMessage($"set shortcut name\t{knownShortcut.Name}");
-                                }
-                            }
-                            catch { }
-
-                            CleanupFonts(AddedFonts);
-                        }
-                        else
-                        {
-                            LogMessage($"Didn't find Shortcut, nothing to launch in Steam");
-                            MessageBox.Show($"Could not find shortcut in Proxy DB with ID {CLI_steamproxysetup}", "Steam Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else
-                    {
-                        LogMessage($"-steamproxysetup missing ID");
-                        MessageBox.Show("-steamproxysetup missing ID", "Steam Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                finally
-                {
-                    mutex.ReleaseMutex();
-                }
-            }
-        }
-        private static void SteamProxyActivate(string[] args)
-        {
-            LogMessage($"Start Mode SteamProxyActivate");
-
-            using (var mutex = new Mutex(false, mutex_id + "SteamProxyActivate"))
-            {
-                try
-                {
-                    #region Mutex for SteamProxyActivate
-                    try
-                    {
-                        if (!mutex.WaitOne(TimeSpan.FromSeconds(5), false))
-                        {
-                            LogMessage($"Mutex Aquisition Failed");
-                            MessageBox.Show("GameLaunchProxy is already running in SteamProxyActivate mode", "Steam Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Environment.Exit(0);
-                        }
-                    }
-                    catch (AbandonedMutexException)
-                    {
-                        // Log the fact the mutex was abandoned in another process, it will still get aquired
-                    }
-                    #endregion Mutex for SteamProxyActivate
-
-                    if (File.Exists("steamproxy.json"))
-                    {
-                        #region Read -steamproxyactivate
-                        int CLI_steamproxyactivate_Index = 0;
-                        for (; CLI_steamproxyactivate_Index < args.Length; CLI_steamproxyactivate_Index++)
-                        {
-                            if (args[CLI_steamproxyactivate_Index] == "-steamproxyactivate")
-                                break;
-                        }
-                        CLI_steamproxyactivate_Index++;
-                        string CLI_steamproxyactivate = null;
-                        if (CLI_steamproxyactivate_Index < args.Length)
-                        {
-                            CLI_steamproxyactivate = args[CLI_steamproxyactivate_Index];
-                        }
-                        #endregion Read -steamproxyactivate
-
-                        if (CLI_steamproxyactivate != null)
-                        {
-                            //SteamShortcutSettings steamShortcutSetting = settings.SteamShortcuts.Where(shortDat => shortDat.LaunchPath.ToLowerInvariant().EndsWith($"-steamproxyactivate {CLI_steamproxyactivate}".ToLowerInvariant())).FirstOrDefault();
-
-                            SteamProxyData steamProxy = JsonConvert.DeserializeObject<SteamProxyData>(File.ReadAllText("steamproxy.json"));
-                            File.Delete("steamproxy.json");
-
-                            LogMessage($"steamproxy.json");
-                            LogMessage(JsonConvert.SerializeObject(steamProxy));
-
-                            ProgramSettings programSettings = LoadProgramSettings(steamProxy.Program);
-                            StartProgram(programSettings, steamProxy.Program, steamProxy.Args); // and wait for it to finish
-                        }
-                        else
-                        {
-                            LogMessage($"Could not find shortcut in Proxy DB with ID, how on earth could this happen?");
-                            MessageBox.Show($"Could not find shortcut in Proxy DB with ID {CLI_steamproxyactivate}", "Steam Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("steamproxy.json file not found", "Steam Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                finally
-                {
-                    mutex.ReleaseMutex();
-                }
-            }
-
-            LogMessage($"End Mode SteamProxyActivate");
-        }
-        private static void GenericProxy(string[] args)
-        {
-            LogMessage($"Start Mode GenericProxy");
-
-            string rawCommandLine = Environment.CommandLine;
-            List<string> argList = Regex.Matches(rawCommandLine, @"[\""].+?[\""]|[^ ]+")
-                                        .Cast<Match>()
-                                        .Select(m => m.Value)
-                                        .Skip(1)
-                                        .ToList();
-
-            string programPath = argList[0].StartsWith("\"") && argList[0].EndsWith("\"") ? argList[0].Substring(1, argList[0].Length - 2) : argList[0];
-            string programArgs = string.Join(" ", argList.Skip(1));
-
-            LogMessage($"Program\t{programPath}");
-            LogMessage($"Args\t{programArgs}");
-
-            if (File.Exists(programPath))
-            {
-                ProgramSettings programSettings = LoadProgramSettings(programPath);
-                List<string> AddedFonts = SetupFonts(programSettings);
-                StartProgram(programSettings, programPath, programArgs); // and wait for it to finish
-                CleanupFonts(AddedFonts);
-            }
-
-            LogMessage($"End Mode GenericProxy");
-        }
-        
+      
         private static void LoadSettings()
         {
             if (File.Exists("settings.json"))
@@ -953,6 +640,43 @@ namespace GameLaunchProxy
 
                             Keyboard.Key key = new Keyboard.Key(Keyboard.Messaging.VKeys.KEY_F4);
                             Keyboard.Messaging.ForegroundKeyPressAll(WindowToFind, key, true, false, false);
+
+
+
+                            // force parent process to front
+                            try
+                            {
+                                var myId = Process.GetCurrentProcess().Id;
+                                var query = string.Format("SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {0}", myId);
+                                var search = new ManagementObjectSearcher("root\\CIMV2", query);
+                                var results = search.Get().GetEnumerator();
+                                results.MoveNext();
+                                var queryObj = results.Current;
+                                var parentId = (uint)queryObj["ParentProcessId"];
+                                var parent = Process.GetProcessById((int)parentId);
+
+
+
+
+                                int secondsOfAggression = 0;
+                                do
+                                {
+                                    {
+                                        IntPtr hwnd = parent.MainWindowHandle;
+                                        if (hwnd == IntPtr.Zero)
+                                        {
+                                            //the window is hidden so try to restore it before setting focus.
+                                            ShowWindow(parent.Handle, ShowWindowEnum.Restore);
+                                        }
+
+                                        //set user the focus to the window
+                                        SetForegroundWindow(parent.MainWindowHandle);
+                                    }
+                                    Thread.Sleep(1000);
+                                    secondsOfAggression++;
+                                } while (secondsOfAggression <= 1);
+                            }
+                            catch { }
                         }
                         else
                         {
@@ -961,68 +685,6 @@ namespace GameLaunchProxy
                     }
                 }
             }
-        }
-
-        
-        private static void StartProgram(ProgramSettings programSetting, string programPath, string programArgs)
-        {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.CreateNoWindow = false;
-            startInfo.UseShellExecute = false;
-            startInfo.FileName = programPath.Trim('"');
-            startInfo.Arguments = programArgs;
-            startInfo.WorkingDirectory = Path.GetDirectoryName(programPath.Trim('"'));
-
-            LogMessage($"Starting Program");
-            LogMessage($"FileName:\t{startInfo.FileName}");
-            LogMessage($"Arguments:\t{startInfo.Arguments}");
-            LogMessage($"WorkingDirectory:\t{startInfo.WorkingDirectory}");
-
-            Process runningProc = Process.Start(startInfo);
-
-            if (programSetting != null)
-            {
-                if (programSetting.AggressiveFocus.HasValue)
-                {
-                    int secondsOfAggression = 0;
-                    do
-                    {
-                        {
-                            IntPtr hwnd = runningProc.MainWindowHandle;
-                            if (hwnd == IntPtr.Zero)
-                            {
-                                //the window is hidden so try to restore it before setting focus.
-                                ShowWindow(runningProc.Handle, ShowWindowEnum.Restore);
-                            }
-
-                            //set user the focus to the window
-                            SetForegroundWindow(runningProc.MainWindowHandle);
-                        }
-                        Thread.Sleep(1000);
-                        secondsOfAggression++;
-                    } while (secondsOfAggression <= programSetting.AggressiveFocus.Value);
-                }
-            }
-
-            runningProc.WaitForExit();
-            /*for(;;)
-            {
-                if(!runningProc.IsRunning())
-                {
-                    break;
-                }
-                if (alreadyCleaning)
-                {
-                    if (!runningProc.IsRunning())
-                    {
-                        runningProc.Close();
-                    }
-                    break;
-                }
-                Thread.Sleep(1000);
-            }*/
-
-            LogMessage($"Ended Program Normally");
         }
     }
 
@@ -1043,5 +705,12 @@ namespace GameLaunchProxy
             }
             return true;
         }
+    }
+
+    public class GameRestoreData
+    {
+        public UInt64 SteamShortcutID { get; set; }
+        public string OldSteamShortcutname { get; set; }
+        public List<string> AddedFonts { get; set; }
     }
 }

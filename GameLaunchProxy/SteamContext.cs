@@ -192,6 +192,9 @@ namespace GameLaunchProxy
             if(!IsSteam4NETLoaded)
                 return;
 
+            if (SteamPID == 0)
+                return;
+
             if (!Steamworks.LoadSteam())
                 return;
             IsSteamLoaded = true;
@@ -659,6 +662,8 @@ namespace GameLaunchProxy
                 });
 
                 File.Copy(shortcutFilePath, shortcutFilePath + DateTime.UtcNow.ToString(".yyyyMMddHHmmss"));
+                File.Delete(shortcutFilePath);
+                //File.Create(shortcutFilePath);
                 SteamShortcutDataFile.Write(shortcutFilePath, ShortcutFile);
 
                 return count;

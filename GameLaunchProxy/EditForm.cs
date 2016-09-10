@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,7 +24,6 @@ namespace GameLaunchProxy
 
         string selectedKey;
         ProgramSettings selectedItem;
-        SteamShortcutSettings selectedShortcut;
 
         RenamePlatformDialog dlgRenamePlatformDialog;
 
@@ -50,7 +50,6 @@ namespace GameLaunchProxy
 
             LoadSettings();
             UpdateLaunchOptionsList();
-            UpdateSteamShortcutList();
             loggingToolStripMenuItem.Checked = settings.logging;
             LoadProgramItem(null);
 
@@ -64,6 +63,8 @@ namespace GameLaunchProxy
             txtLaunchBoxLibrary.Text = settings.Core.LaunchBoxLibrary;
 
             settings.PropertyChanged += settings_PropertyChanged;
+
+            UpdateTxtFrontEndShortcut();
         }
 
         ~EditForm()
@@ -296,6 +297,62 @@ namespace GameLaunchProxy
                     return title;
                 }).Distinct().Select(name => new SteamShortcut(name, proxyPath, Path.GetDirectoryName(proxyPath), proxyPath, string.Empty, true, true, false, new List<string>() { "GameLaunchProxy" })).ToList();
                 if(newData.Count > 0)
+                {
+                    try
+                    {
+                        SteamContext.GetInstance().AddShortcuts(newData, settings.Core.SteamShortcutFilePath);
+                    }
+                    catch (SteamException)
+                    {
+                        MessageBox.Show("Error adding shortcuts to running Steam instance.\r\nNote: some shortcuts may have been added.\r\nIf error persists, please close Steam to utilize alternative methods.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void btnAddAllProxyShortcutsWithPlatformPrefix_Click(object sender, EventArgs e)
+        {
+            if (settings.Core.SteamShortcutFilePath != null && File.Exists(settings.Core.SteamShortcutFilePath))
+            {
+                string proxyPath;
+                {
+                    string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                    UriBuilder uri = new UriBuilder(codeBase);
+                    string path = Uri.UnescapeDataString(uri.Path);
+                    proxyPath = Path.GetFullPath(path);
+                    proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "SteamProxy.exe");
+                }
+
+                List<GameNameData> launchbox_names;
+                if (File.Exists("names_launchbox.json"))
+                {
+                    launchbox_names = JsonConvert.DeserializeObject<List<GameNameData>>(File.ReadAllText("names_launchbox.json"));
+                }
+                else
+                {
+                    launchbox_names = new List<GameNameData>();
+                }
+
+
+
+                List<SteamShortcut> newData = launchbox_names.Select(dr =>
+                {
+                    string title = dr.Title;
+                    if (!string.IsNullOrWhiteSpace(dr.Platform))
+                    {
+                        string platform = dr.Platform;
+                        if (settings.PlatformRenames.ContainsKey(dr.Platform))
+                        {
+                            platform = settings.PlatformRenames[dr.Platform];
+                        }
+                        if (!string.IsNullOrWhiteSpace(platform))
+                        {
+                            title = @"[" + platform + @"] " + title;
+                        }
+                    }
+                    return title;
+                }).Distinct().Select(name => new SteamShortcut(name, proxyPath, Path.GetDirectoryName(proxyPath), proxyPath, string.Empty, true, true, false, new List<string>() { "GameLaunchProxy" })).ToList();
+                if (newData.Count > 0)
                 {
                     try
                     {
@@ -623,145 +680,54 @@ namespace GameLaunchProxy
         }
         #endregion AggressiveFocus
 
-        #region SteamShortcutList
-        private void UpdateSteamShortcutList()
-        {
-            lbSteamShortcuts.BeginUpdate();
-            lbSteamShortcuts.Items.Clear();
-            settings.SteamShortcuts.ToList().ForEach(dr =>
-            {
-                lbSteamShortcuts.Items.Add(dr);
-            });
-            lbSteamShortcuts.EndUpdate();
-        }
-        private void lbSteamShortcuts_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (lbSteamShortcuts.SelectedIndex > -1)
-            {
-                LoadSteamShortcutItem(lbSteamShortcuts.SelectedIndex);
-            }
-            else
-            {
-                LoadSteamShortcutItem(-1);
-            }
-        }
-        private void LoadSteamShortcutItem(int _selectedItem)
-        {
-            if (_selectedItem >= 0 && settings.SteamShortcuts.Count > _selectedItem)
-            {
-                selectedShortcut = settings.SteamShortcuts[_selectedItem];
-                //selectedKey = _selectedItem;
-            }
-            else
-            {
-                selectedShortcut = null;
-                //selectedKey = null;
-            }
-
-            ignoreSteamShortcutFields = true;
-            if (selectedShortcut != null)
-            {
-                btnRemoveSteamShortcut.Enabled = true;
-
-                txtSteamShortcutName.Text = selectedShortcut.Name;
-                txtSteamShortcutTarget.Text = selectedShortcut.LaunchPath;
-                txtSteamShortcutShortcut.Text = selectedShortcut.ID.ToString();
-                txtLaunchBoxPath.Text = selectedShortcut.LaunchPath.Replace("-steamproxyactivate", "-steamproxysetup") + " -steamproxyname \"<Name for Steam>\" <original emulator command line>";
-
-                txtSteamShortcutName.Enabled = true;
-                txtSteamShortcutTarget.Enabled = true;
-                txtSteamShortcutShortcut.Enabled = true;
-            }
-            else
-            {
-                btnRemoveSteamShortcut.Enabled = false;
-
-                txtSteamShortcutName.Enabled = false;
-                txtSteamShortcutTarget.Enabled = false;
-                txtSteamShortcutShortcut.Enabled = false;
-
-                txtSteamShortcutName.Text = null;
-                txtSteamShortcutTarget.Text = null;
-                txtSteamShortcutShortcut.Text = null;
-                txtLaunchBoxPath.Text = null;
-            }
-            ignoreSteamShortcutFields = false;
-        }
-        private void btnAddNewSteamShortcut_Click(object sender, EventArgs e)
-        {
-            settings.SteamShortcuts.Add(new SteamShortcutSettings());
-            SaveSettings();
-            UpdateSteamShortcutList();
-        }
-        private void btnRemoveSteamShortcut_Click(object sender, EventArgs e)
-        {
-            if (selectedShortcut != null)
-            {
-                settings.SteamShortcuts.Remove(selectedShortcut);
-                SaveSettings();
-                UpdateSteamShortcutList();
-                LoadSteamShortcutItem(-1);
-            }
-        }
-        #endregion SteamShortcutList
-
-        #region Edit Steam Shortcut
-        private void txtSteamShortcutName_TextChanged(object sender, EventArgs e)
-        {
-            if(!ignoreSteamShortcutFields)
-            {
-                if(selectedShortcut != null)
-                {
-                    selectedShortcut.Name = txtSteamShortcutName.Text;
-                    selectedShortcut.ID = selectedShortcut.GenerateGameID();
-                    ignoreSteamShortcutFields = true;
-                    txtSteamShortcutShortcut.Text = selectedShortcut.ID.ToString();
-                    ignoreSteamShortcutFields = false;
-                    SaveSettings();
-                    UpdateSteamShortcutList();
-                }
-            }
-        }
-        private void txtSteamShortcutTarget_TextChanged(object sender, EventArgs e)
-        {
-            if (!ignoreSteamShortcutFields)
-            {
-                if (selectedShortcut != null)
-                {
-                    selectedShortcut.LaunchPath = txtSteamShortcutTarget.Text;
-                    selectedShortcut.ID = selectedShortcut.GenerateGameID();
-                    ignoreSteamShortcutFields = true;
-                    txtSteamShortcutShortcut.Text = selectedShortcut.ID.ToString();
-                    ignoreSteamShortcutFields = false;
-                    SaveSettings();
-                }
-            }
-        }
-        private void txtSteamShortcutShortcut_TextChanged(object sender, EventArgs e)
-        {
-            if (!ignoreSteamShortcutFields)
-            {
-                if (selectedShortcut != null)
-                {
-                    try
-                    {
-                        selectedShortcut.ID = UInt64.Parse(txtSteamShortcutShortcut.Text);
-                    }
-                    catch
-                    {
-                        txtSteamShortcutShortcut.Text = selectedShortcut.ID.ToString();
-                    }
-                    SaveSettings();
-                }
-            }
-        }
-        #endregion Edit Steam Shortcut
-
         private void loggingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             settings.logging = !settings.logging;
             loggingToolStripMenuItem.Checked = settings.logging;
             SaveSettings();
+        }
+
+        private void txtEmulator_TextChanged(object sender, EventArgs e)
+        {
+            UpdateTxtFrontEndShortcut();
+        }
+
+        private void txtCommand_TextChanged(object sender, EventArgs e)
+        {
+            UpdateTxtFrontEndShortcut();
+        }
+
+        private void rbProxyType_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateTxtFrontEndShortcut();
+        }
+
+        private void UpdateTxtFrontEndShortcut()
+        {
+            string proxyPath;
+            {
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                proxyPath = Path.GetFullPath(path);
+                proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "GameLaunchProxy.exe");
+            }
+
+            string emulator = txtEmulator.Text.Trim().Trim('"');
+            string command = txtCommand.Text.Trim();
+            string shortEmulatorName = Path.GetFileName(emulator);
+            if(command.StartsWith(shortEmulatorName))
+            {
+                command = command.Replace(shortEmulatorName, "").Trim();
+            }
+
+            txtFrontEndShortcut.Text = string.Empty;
+            txtFrontEndShortcut.AppendText("\"" + proxyPath + "\"", Color.Red);
+            if (rbProxySteam.Checked) txtFrontEndShortcut.AppendText(" -steam", Color.Black);
+            if (rbProxyBigPicture.Checked) txtFrontEndShortcut.AppendText(" -steambigpicture", Color.Black);
+            txtFrontEndShortcut.AppendText(" -name \"[%platformname%] %gamename%\" -fallbackname \"%platformname%\" -proxy ", Color.Black);
+            txtFrontEndShortcut.AppendText("\"" + emulator + "\"", Color.Blue);
+            txtFrontEndShortcut.AppendText(" " + command, Color.Green);
         }
     }
 
@@ -779,6 +745,19 @@ namespace GameLaunchProxy
         public override string ToString()
         {
             return key.PadRight(40) + "\t=>\t" + value.PadLeft(40);
+        }
+    }
+
+    public static class RichTextBoxExtensions
+    {
+        public static void AppendText(this RichTextBox box, string text, Color color)
+        {
+            box.SelectionStart = box.TextLength;
+            box.SelectionLength = 0;
+
+            box.SelectionColor = color;
+            box.AppendText(text);
+            box.SelectionColor = box.ForeColor;
         }
     }
 }

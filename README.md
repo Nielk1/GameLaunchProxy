@@ -9,61 +9,28 @@ Features:
 * Aggressive Focus will attempt to pull the launched program into the foreground once per second for the number of configured seconds.
 * Launching emulators and games through Steam via proxy.
 
-Planned future features:
-* Support for passing through command line arguments to the proxied application.
-* Support for forcing Steam dialogs to the foreground for games needing further information before launching.
+## Core Tab
+The core configuration of the Proxy application is on this tab.  For the Steam functions to work, the Steam userdata shortcut.vdf path must be set.  To scrape the LaunchBox library the LaunchBox Library LaunchBox.xml path must be set.
+The Front End Shortcut section allows for the creation of shortcut paths for use in LaunchBox or another front end.
 
-Steam Proxy
------------
+## Steam Shortcut Names
+To utilize the Steam Proxy feature a proxy shortcut must exist in Steam.  This can be done with 1 click to the "Add Default" button.
+The LaunchBox library must be scraped to generate a platform and gamename list for the proper function of the advanced Steam Proxy functions, such as shortcut renaming. 
+Platform names may be adjusted in the platform list. 
+Game names are matched from the LaunchBox Library scrape to the stored name and platform information via the rom filename.  If the library item is an archive, the contained file will also be checked for the case where the front end extracted the rom file.
 
-To utilize the Steam Proxy feature, a shortcut must be added to steam as indicated by the program's GUI.
+## Launch Options
+These are the original functions of the GameLaunchProxy.  Currently available are temporary font loading and forced game focus.
 
-The Steam shortcut should be written as such:
-~~~~
-"X:\path\to\proxy\GameLaunchProxy.exe" -steamproxyactivate IDVALUE
-~~~~
-
-The command in your front end to launch this proxy should be as such:
-~~~~
-"X:\path\to\proxy\GameLaunchProxy.exe" -steamproxysetup IDVALUE -steamproxyname NAME -steamproxyhold "X:\path\to\emulator.exe" -a -b 22 -c "test" "X:\path\to\rom.file"
-~~~~
 
 ~~~~
--steamproxyactivate IDVALUE
-~~~~
-This is the ID value of the proxy.  This is used by the launcher to lookup proxy information.  
-This is also used, if shortcut renaming is working and applied, to find the shortcut in steam.  
+"X:\path\to\proxy\GameLaunchProxy.exe" [-steam] [-steambigpicture] [-name <string>] [-fallbackname <string>] -proxy "X:\path\to\emulator\emulator.exe" "FULL\PATH\TO\ROM\FILE"
 
-~~~~
--steamproxysetup IDVALUE
-~~~~
-This is the ID value of the proxy.  It serves no purpose here except to allow the proxy to find the shortcut for renaming.  
-It also allows for multiple shortcuts to the same proxy with the same name to exist in Steam.  
-However, it is suggested you name your shortcuts appropriately for those incidents where the rename functionality fails.  
+-steam : optional, triggers the steam proxy logic
+-steambigpicture : optional, triggers steam big picture via steam proxy logic
+-name : Name for Steam shortcut.  The system will try to find a SteamProxy.exe shortcut with this name and, failing that, rename the default shortcut.
+-fallbackname : Fallback name for the Steam shortcut.  The system will try this name if all attempts at using -name fail.
+-proxy : REQUIRED, any instructions after this command will be run through the proxy
 
+%platformname% and %gamename% may be used in -name and -fallbackname, they will be filled from the Launchbox Library Scrape data based on rom filename
 ~~~~
--steamproxyname NAME
-~~~~
-Optional
-All instances of "%cleanromname%" in its value will be replaced with the filename of the rom without extension.  
-Note that if the rom is not the last argument you should avoid using "%cleanromname%".  
-Names with spaces should be quoted as with any CLI value.  
-
-~~~~
--steamproxyhold
-~~~~
-Optional  
-When supplied, the proxy will hold for 10 seconds and then look for the target application.  If found, it will hold until said program is closed.  
-Note that in some cases, such as with the RocketLauncher middleware, this option may cause the middleware to hang open. Be sure to test your setup.  
-
-~~~~
--steamproxyforcebigpicture
-~~~~
-Optional  
-Big Picture will open before starting the game.  
-
-~~~~
--steamproxyclosebigpicture
-~~~~
-Optional  
-Big Picture will close after starting the game.  Warning, if Big Picture was not used, a random Steam window could close.  
