@@ -30,7 +30,6 @@ namespace GameLaunchProxy
         int FontGroupHeight = 100;
 
         bool ignoreAggressiveFocusChanges = false;
-        bool ignoreSteamShortcutFields = false;
 
         Thread worker = null;
 
@@ -61,6 +60,7 @@ namespace GameLaunchProxy
             settingsFirstLoad();
 
             txtLaunchBoxLibrary.Text = settings.Core.LaunchBoxLibrary;
+            txt7z.Text = settings.Core.SevenZipLib;
 
             settings.PropertyChanged += settings_PropertyChanged;
 
@@ -122,6 +122,12 @@ namespace GameLaunchProxy
                     txtLaunchBoxLibrary.TextChanged += txtLaunchBoxLibrary_TextChanged;
                     btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null && File.Exists(settings.Core.LaunchBoxLibrary) && (worker == null || !worker.IsAlive);
                     break;
+                case "Core.SevenZipLib":
+                    txt7z.TextChanged -= txt7z_TextChanged;
+                    txt7z.Text = settings.Core.SevenZipLib;
+                    txt7z.TextChanged += txt7z_TextChanged;
+                    btn7z.Enabled = settings.Core.SevenZipLib != null && File.Exists(settings.Core.SevenZipLib) && (worker == null || !worker.IsAlive);
+                    break;
             }
             SaveSettings();
         }
@@ -169,6 +175,18 @@ namespace GameLaunchProxy
         {
             settings.Core.LaunchBoxLibrary = txtLaunchBoxLibrary.Text;
         }
+
+        private void btn7z_Click(object sender, EventArgs e)
+        {
+            if (ofd7z.ShowDialog() == DialogResult.OK)
+            {
+                settings.Core.SevenZipLib = ofd7z.FileName;
+            }
+        }
+        private void txt7z_TextChanged(object sender, EventArgs e)
+        {
+            settings.Core.SevenZipLib = txt7z.Text;
+        }
         #endregion CoreTab
 
         #region SteamShortcutNamesTab
@@ -186,7 +204,8 @@ namespace GameLaunchProxy
 
                 worker = new Thread(() =>
                 {
-                    LaunchBoxLibrary lib = new LaunchBoxLibrary(settings.Core.LaunchBoxLibrary);
+                    LaunchBoxLibrary lib = new LaunchBoxLibrary(settings.Core.LaunchBoxLibrary, settings);
+                    DateTime time = DateTime.UtcNow;
 
                     lib.Progress += delegate (object _sender, int counter, int total)
                     {
@@ -195,6 +214,27 @@ namespace GameLaunchProxy
                             pbScrapeLaunchBox.Style = ProgressBarStyle.Blocks;
                             pbScrapeLaunchBox.Maximum = total;
                             pbScrapeLaunchBox.Value = counter;
+
+
+                            {
+                                TimeSpan elap = DateTime.UtcNow - time;
+
+                                int percent = (int)(((double)(pbScrapeLaunchBox.Value - pbScrapeLaunchBox.Minimum) /
+                                (double)(pbScrapeLaunchBox.Maximum - pbScrapeLaunchBox.Minimum)) * 100);
+
+                                TimeSpan? remain = counter > 0 ? (TimeSpan?)TimeSpan.FromMilliseconds((elap.TotalMilliseconds * total / counter) - elap.TotalMilliseconds) : null;
+
+                                using (Graphics gr = pbScrapeLaunchBox.CreateGraphics())
+                                {
+                                    gr.DrawString(percent.ToString() + "%" + (remain.HasValue ? " (" + remain.Value.ToString("hh\\:mm\\:ss") + " est remaining)" : string.Empty),
+                                        SystemFonts.DefaultFont,
+                                        Brushes.Black,
+                                        new PointF(pbScrapeLaunchBox.Width / 2 - (gr.MeasureString(percent.ToString() + "%",
+                                            SystemFonts.DefaultFont).Width / 2.0F),
+                                        pbScrapeLaunchBox.Height / 2 - (gr.MeasureString(percent.ToString() + "%",
+                                            SystemFonts.DefaultFont).Height / 2.0F)));
+                                }
+                            }
                         });
                         if (pbScrapeLaunchBox.InvokeRequired)
                         {
@@ -725,7 +765,7 @@ namespace GameLaunchProxy
             txtFrontEndShortcut.AppendText("\"" + proxyPath + "\"", Color.Red);
             if (rbProxySteam.Checked) txtFrontEndShortcut.AppendText(" -steam", Color.Black);
             if (rbProxyBigPicture.Checked) txtFrontEndShortcut.AppendText(" -steambigpicture", Color.Black);
-            txtFrontEndShortcut.AppendText(" -name \"[%platformname%] %gamename%\" -fallbackname \"%platformname%\" -proxy ", Color.Black);
+            txtFrontEndShortcut.AppendText(" -name \"%gamename% (%platformname%)\" -fallbackname \"%platformname%\" -proxy ", Color.Black);
             txtFrontEndShortcut.AppendText("\"" + emulator + "\"", Color.Blue);
             txtFrontEndShortcut.AppendText(" " + command, Color.Green);
         }

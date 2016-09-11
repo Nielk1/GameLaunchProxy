@@ -62,6 +62,10 @@
             this.txtEmulator = new System.Windows.Forms.TextBox();
             this.txtFrontEndShortcut = new System.Windows.Forms.RichTextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.btn7z = new System.Windows.Forms.Button();
+            this.txt7z = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnLaunchBoxLibraryBrowse = new System.Windows.Forms.Button();
             this.txtLaunchBoxLibrary = new System.Windows.Forms.TextBox();
@@ -91,6 +95,7 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.ofdSteamUserDataShortcuts = new System.Windows.Forms.OpenFileDialog();
             this.ofdLaunchBoxLibrary = new System.Windows.Forms.OpenFileDialog();
+            this.ofd7z = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -105,6 +110,7 @@
             this.tabPageCore.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.tabSteamShortcutNames.SuspendLayout();
@@ -381,7 +387,7 @@
             this.groupBox2.Controls.Add(this.rbProxyNormal);
             this.groupBox2.Controls.Add(this.txtEmulator);
             this.groupBox2.Controls.Add(this.txtFrontEndShortcut);
-            this.groupBox2.Location = new System.Drawing.Point(8, 66);
+            this.groupBox2.Location = new System.Drawing.Point(6, 96);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(662, 118);
             this.groupBox2.TabIndex = 5;
@@ -483,17 +489,62 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label9, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label8, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel3, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(676, 60);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(676, 90);
             this.tableLayoutPanel1.TabIndex = 4;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.btn7z);
+            this.panel2.Controls.Add(this.txt7z);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(176, 60);
+            this.panel2.Margin = new System.Windows.Forms.Padding(0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(500, 30);
+            this.panel2.TabIndex = 6;
+            // 
+            // btn7z
+            // 
+            this.btn7z.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn7z.Location = new System.Drawing.Point(422, 3);
+            this.btn7z.Name = "btn7z";
+            this.btn7z.Size = new System.Drawing.Size(75, 23);
+            this.btn7z.TabIndex = 3;
+            this.btn7z.Text = "Browse";
+            this.btn7z.UseVisualStyleBackColor = true;
+            this.btn7z.Click += new System.EventHandler(this.btn7z_Click);
+            // 
+            // txt7z
+            // 
+            this.txt7z.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txt7z.Location = new System.Drawing.Point(3, 5);
+            this.txt7z.Name = "txt7z";
+            this.txt7z.Size = new System.Drawing.Size(413, 20);
+            this.txt7z.TabIndex = 0;
+            this.txt7z.TextChanged += new System.EventHandler(this.txt7z_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 69);
+            this.label2.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "7z Library / DLL";
             // 
             // panel4
             // 
@@ -827,6 +878,10 @@
             // 
             this.ofdLaunchBoxLibrary.Filter = "LaunchBox.xml|LaunchBox.xml";
             // 
+            // ofd7z
+            // 
+            this.ofd7z.Filter = "7z Library|7z*.dll";
+            // 
             // EditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -858,6 +913,8 @@
             this.groupBox2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -937,6 +994,11 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox txtCommand;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btn7z;
+        private System.Windows.Forms.TextBox txt7z;
+        private System.Windows.Forms.OpenFileDialog ofd7z;
     }
 }
 

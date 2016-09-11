@@ -79,6 +79,20 @@ namespace GameLaunchProxy
             }
         }
 
+        private string _SevenZipLib;
+        public string SevenZipLib
+        {
+            get
+            {
+                return _SevenZipLib;
+            }
+            set
+            {
+                _SevenZipLib = value;
+                OnPropertyChanged("SevenZipLib");
+            }
+        }
+
         public virtual void OnPropertyChanged(string propertyName)
         {
             var propertyChanged = PropertyChanged;

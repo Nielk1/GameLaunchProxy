@@ -202,9 +202,15 @@ namespace GameLaunchProxy
                             List<GameNameData> possibleNameMatches = new List<GameNameData>();
                             possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileFullPath != null && dr.OuterFileFullPath == rom).ToList());
                             possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && dr.OuterFileName == Path.GetFileName(rom)).ToList());
-                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && Path.GetFileNameWithoutExtension(dr.OuterFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
                             possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && dr.InnerFileName == Path.GetFileName(rom)).ToList());
+                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && Path.GetFileNameWithoutExtension(dr.OuterFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
                             possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && Path.GetFileNameWithoutExtension(dr.InnerFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
+
+                            LogMessage($"Possible Name Matches:");
+                            foreach (GameNameData item in possibleNameMatches)
+                            {
+                                LogMessage($"\t{item.Title}\t{item.Platform}\t{item.OuterFileFullPath}\t{item.OuterFileName}\t{item.InnerFileName}");
+                            }
 
                             GameNameData gameNameData = possibleNameMatches.FirstOrDefault();
                             if (gameNameData != null)
@@ -264,6 +270,7 @@ namespace GameLaunchProxy
                         #endregion Clean Up Names
 
                         #region Find Shortcut
+                        LogMessage($"Looking for steam shortcut");
                         string proxyPath;
                         {
                             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
@@ -272,6 +279,8 @@ namespace GameLaunchProxy
                             proxyPath = Path.GetFullPath(path);
                             proxyPath = Path.Combine(Path.GetDirectoryName(proxyPath), "SteamProxy.exe");
                         }
+
+                        LogMessage($"Shotcuts must path to \"{proxyPath}\"");
 
                         List<Tuple<string, bool>> names = new List<Tuple<string, bool>>();
                         if (!string.IsNullOrWhiteSpace(name))
@@ -282,6 +291,12 @@ namespace GameLaunchProxy
                         if (!string.IsNullOrWhiteSpace(fallBackName))
                             names.Add(new Tuple<string, bool>(fallBackName, false));
                         names.Add(new Tuple<string, bool>("SteamProxy", false));
+
+                        LogMessage($"Search Patterns:");
+                        foreach(Tuple<string, bool> item in names)
+                        {
+                            LogMessage($"\t{item.Item1}\t" + (item.Item2 ? "<rename>" : string.Empty));
+                        }
 
                         UInt64 steamShortcutId = 0;
                         for (int x = 0; x < names.Count && steamShortcutId == 0; x++)
@@ -302,6 +317,7 @@ namespace GameLaunchProxy
                                 }
                             }
                         }
+                        LogMessage($"Done looking for steam shortcut");
                         #endregion Find Shortcut
 
                         if (steamShortcutId == 0)

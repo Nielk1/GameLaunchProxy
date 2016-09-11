@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SevenZip;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -8,12 +10,14 @@ namespace GameLaunchProxy
     {
         private XmlDocument doc;
         private XmlElement root;
+        private Settings settings;
 
-        public LaunchBoxLibrary(string launchBoxLibrary)
+        public LaunchBoxLibrary(string launchBoxLibrary, Settings settings)
         {
             doc = new XmlDocument();
             doc.Load(launchBoxLibrary);
             root = doc["LaunchBox"];
+            this.settings = settings;
         }
 
         public List<GameNameData> GetGameData()
@@ -33,17 +37,59 @@ namespace GameLaunchProxy
                     string platform = xnode["Platform"].InnerText;
                     bool hide = xnode["Hide"].InnerText == "true";
 
+                    List<string> innerFilenames = new List<string>();
+
                     if (!fullPath.StartsWith("steam://") && !hide)
                     {
-                        GameNameData dat = new GameNameData()
+                        switch (Path.GetExtension(fullPath))
                         {
-                            OuterFileFullPath = fullPath,
-                            OuterFileName = Path.GetFileName(fullPath),
-                            Title = title,
-                            Platform = platform
-                        };
+                            case ".7z":
+                            case ".zip":
+                                try
+                                {
+                                    if (!string.IsNullOrWhiteSpace(settings.Core.SevenZipLib) && File.Exists(settings.Core.SevenZipLib))
+                                    {
+                                        SevenZipExtractor.SetLibraryPath(settings.Core.SevenZipLib);
+                                        SevenZipExtractor engine = new SevenZipExtractor(fullPath);
+                                        foreach (var item in engine.ArchiveFileData)
+                                        {
+                                            innerFilenames.Add(item.FileName);
+                                        }
+                                    }
+                                }
+                                catch { }
+                                break;
+                        }
 
-                        retVal.Add(dat);
+
+                        if (innerFilenames.Count > 0)
+                        {
+                            foreach (string innerName in innerFilenames)
+                            {
+                                GameNameData dat = new GameNameData()
+                                {
+                                    OuterFileFullPath = fullPath,
+                                    OuterFileName = Path.GetFileName(fullPath),
+                                    InnerFileName = innerName,
+                                    Title = title,
+                                    Platform = platform
+                                };
+
+                                retVal.Add(dat);
+                            }
+                        }
+                        else
+                        {
+                            GameNameData dat = new GameNameData()
+                            {
+                                OuterFileFullPath = fullPath,
+                                OuterFileName = Path.GetFileName(fullPath),
+                                Title = title,
+                                Platform = platform
+                            };
+
+                            retVal.Add(dat);
+                        }
                     }
                 }
                 counter++;
