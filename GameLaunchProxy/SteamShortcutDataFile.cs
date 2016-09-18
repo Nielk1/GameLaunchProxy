@@ -166,11 +166,13 @@ namespace GameLaunchProxy
         public void Add(VProperty vProperty)
         {
             Properties.Add(vProperty);
+            NumericMemo = null; // we don't know anymore
         }
 
         public void Add(string key, VToken token)
         {
             Properties.Add(new VProperty(key, token));
+            NumericMemo = null; // we don't know anymore
         }
 
         public void Add(VToken token)
@@ -194,10 +196,12 @@ namespace GameLaunchProxy
                         dr.Key = (int.Parse(dr.Key) - 1).ToString();
                     });
                 }
+                NumericMemo = true; // we were numeric and we removed numerics and shifted
                 return countRemoved;
             }
             else
             {
+                NumericMemo = null; // we don't know anymore
                 return Properties.RemoveAll(dr => dr.Key == key);
             }
         }
@@ -215,20 +219,27 @@ namespace GameLaunchProxy
                     {
                         dr.Key = (int.Parse(dr.Key) - 1).ToString();
                     });
+                    NumericMemo = true; // we're still numeric
                     return countRemoved;
                 }
+                NumericMemo = true; // we're still numeric
                 return 0;
             }
             else
             {
+                NumericMemo = null; // we don't know, we might have removed the thing that made us not numeric
                 return Properties.RemoveAll(dr => dr.Value == value);
             }
         }
 
+        private bool? NumericMemo;
         public bool IsNumeric()
         {
             if (Properties.Count == 0)
                 return true;
+
+            if (NumericMemo.HasValue)
+                return NumericMemo.Value;
 
             int tmp;
             if (!Properties.All(dr => int.TryParse(dr.Key, out tmp)))

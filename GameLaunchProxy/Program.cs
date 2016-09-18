@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Management;
+using System.Configuration;
 
 namespace GameLaunchProxy
 {
@@ -92,12 +93,22 @@ namespace GameLaunchProxy
         static Settings settings;
 
 
+        static int config_SteamShortcutAfterRenameDelay;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main(string[] args)
         {
+            {
+                string string_SteamShortcutAfterRenameDelay = ConfigurationManager.AppSettings.Get("SteamShortcutAfterRenameDelay");
+                if (!int.TryParse(string_SteamShortcutAfterRenameDelay, out config_SteamShortcutAfterRenameDelay))
+                {
+                    config_SteamShortcutAfterRenameDelay = 0;
+                }
+            }
+
             LoadSettings();
 
             LogMessage($"Start");
@@ -301,19 +312,31 @@ namespace GameLaunchProxy
                         UInt64 steamShortcutId = 0;
                         for (int x = 0; x < names.Count && steamShortcutId == 0; x++)
                         {
+                            LogMessage($"Searching for item #{x}");
+
                             steamShortcutId = SteamContext.GetInstance().GetShortcutID(names[x].Item1, proxyPath, settings.Core.SteamShortcutFilePath);
+
+                            LogMessage($"Shortcut ID Candidate:\t{steamShortcutId}");
+
                             if (steamShortcutId != 0 && names[x].Item2)
                             {
-                                //UInt64 oldSteamShortcutId = steamShortcutId;
-                                //string oldSteamShortcutName = names[x].Item1;
-                                steamShortcutId = SteamContext.GetInstance().RenameLiveShortcut(steamShortcutId, name);
+                                try {
+                                    //UInt64 oldSteamShortcutId = steamShortcutId;
+                                    //string oldSteamShortcutName = names[x].Item1;
+                                    steamShortcutId = SteamContext.GetInstance().RenameLiveShortcut(steamShortcutId, name);
 
-                                if (steamShortcutId != 0)
+                                    if (steamShortcutId != 0)
+                                    {
+                                        gameRestoreData.SteamShortcutID = steamShortcutId;
+                                        gameRestoreData.OldSteamShortcutname = names[x].Item1;
+                                        File.WriteAllText("GameRestoreData.json", JsonConvert.SerializeObject(gameRestoreData));
+                                        break; // loop will terminate anyway but why not
+                                    }
+                                }
+                                catch
                                 {
-                                    gameRestoreData.SteamShortcutID = steamShortcutId;
-                                    gameRestoreData.OldSteamShortcutname = names[x].Item1;
-                                    File.WriteAllText("GameRestoreData.json", JsonConvert.SerializeObject(gameRestoreData));
-                                    break; // loop will terminate anyway but why not
+                                    LogMessage($"Failed to rename {steamShortcutId}");
+                                    steamShortcutId = 0;
                                 }
                             }
                         }
@@ -351,6 +374,14 @@ namespace GameLaunchProxy
 
                         bool AlreadyInBigPicture = SteamContext.GetInstance().BigPicturePID != 0;
                         SetupBigPicture(bigpicture && !AlreadyInBigPicture);
+
+                        if (gameRestoreData.SteamShortcutID != 0) // did a rename
+                        {
+                            if (config_SteamShortcutAfterRenameDelay > 0)
+                            {
+                                Thread.Sleep(config_SteamShortcutAfterRenameDelay);
+                            }
+                        }
 
                         LogMessage($"start\tsteam://rungameid/{steamShortcutId}");
                         Process.Start($"steam://rungameid/{steamShortcutId}");
@@ -399,6 +430,43 @@ namespace GameLaunchProxy
                         CleanupBigPicture(bigpicture, AlreadyInBigPicture);
 
                         CleanupLaunchedGame();
+
+                        // force parent process to front
+                        try
+                        {
+                            var myId = Process.GetCurrentProcess().Id;
+                            var query = string.Format("SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {0}", myId);
+                            var search = new ManagementObjectSearcher("root\\CIMV2", query);
+                            var results = search.Get().GetEnumerator();
+                            results.MoveNext();
+                            var queryObj = results.Current;
+                            var parentId = (uint)queryObj["ParentProcessId"];
+                            var parent = Process.GetProcessById((int)parentId);
+
+                            if (parent != null)
+                            {
+                                Thread.Sleep(1000);
+
+                                int secondsOfAggression = 0;
+                                do
+                                {
+                                    {
+                                        IntPtr hwnd = parent.MainWindowHandle;
+                                        if (hwnd == IntPtr.Zero)
+                                        {
+                                            //the window is hidden so try to restore it before setting focus.
+                                            ShowWindow(parent.Handle, ShowWindowEnum.Restore);
+                                        }
+
+                                        //set user the focus to the window
+                                        SetForegroundWindow(parent.MainWindowHandle);
+                                    }
+                                    Thread.Sleep(1000);
+                                    secondsOfAggression++;
+                                } while (secondsOfAggression <= 1);
+                            }
+                        }
+                        catch { }
                     }
                     else
                     {
@@ -656,43 +724,6 @@ namespace GameLaunchProxy
 
                             Keyboard.Key key = new Keyboard.Key(Keyboard.Messaging.VKeys.KEY_F4);
                             Keyboard.Messaging.ForegroundKeyPressAll(WindowToFind, key, true, false, false);
-
-
-
-                            // force parent process to front
-                            try
-                            {
-                                var myId = Process.GetCurrentProcess().Id;
-                                var query = string.Format("SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {0}", myId);
-                                var search = new ManagementObjectSearcher("root\\CIMV2", query);
-                                var results = search.Get().GetEnumerator();
-                                results.MoveNext();
-                                var queryObj = results.Current;
-                                var parentId = (uint)queryObj["ParentProcessId"];
-                                var parent = Process.GetProcessById((int)parentId);
-
-
-
-
-                                int secondsOfAggression = 0;
-                                do
-                                {
-                                    {
-                                        IntPtr hwnd = parent.MainWindowHandle;
-                                        if (hwnd == IntPtr.Zero)
-                                        {
-                                            //the window is hidden so try to restore it before setting focus.
-                                            ShowWindow(parent.Handle, ShowWindowEnum.Restore);
-                                        }
-
-                                        //set user the focus to the window
-                                        SetForegroundWindow(parent.MainWindowHandle);
-                                    }
-                                    Thread.Sleep(1000);
-                                    secondsOfAggression++;
-                                } while (secondsOfAggression <= 1);
-                            }
-                            catch { }
                         }
                         else
                         {

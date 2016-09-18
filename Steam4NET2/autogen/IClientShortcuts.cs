@@ -286,14 +286,27 @@ namespace Steam4NET
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutFromFullpathUS( IntPtr thisptr, UInt32 arg0, string arg1 );
 		public void SetShortcutFromFullpath( UInt32 arg0, string arg1 ) 
 		{
-			this.GetFunction<NativeSetShortcutFromFullpathUS>( this.Functions.SetShortcutFromFullpath27 )( this.ObjectAddress, arg0, arg1 ); 
-		}
+            this.GetFunction<NativeSetShortcutFromFullpathUS>( this.Functions.SetShortcutFromFullpath27 )( this.ObjectAddress, arg0, arg1 ); 
+        }
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutAppNameUS( IntPtr thisptr, UInt32 arg0, string arg1 );
+		//[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutAppNameUS( IntPtr thisptr, UInt32 arg0, string arg1 );
+		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutAppNameUS( IntPtr thisptr, UInt32 arg0, IntPtr arg1 );
 		public void SetShortcutAppName( UInt32 arg0, string arg1 ) 
 		{
-			this.GetFunction<NativeSetShortcutAppNameUS>( this.Functions.SetShortcutAppName28 )( this.ObjectAddress, arg0, arg1 ); 
-		}
+            //this.GetFunction<NativeSetShortcutAppNameUS>( this.Functions.SetShortcutAppName28 )( this.ObjectAddress, arg0, arg1 ); 
+
+            byte[] _arg1 = Encoding.UTF8.GetBytes(arg1);
+
+            IntPtr i_arg1 = Marshal.AllocHGlobal(_arg1.Length + 1);
+
+            Marshal.Copy(_arg1, 0, i_arg1, _arg1.Length);
+
+            Marshal.WriteByte(i_arg1, _arg1.Length, 0x00);
+
+            this.GetFunction<NativeSetShortcutAppNameUS>(this.Functions.SetShortcutAppName28)(this.ObjectAddress, arg0, i_arg1);
+
+            Marshal.FreeHGlobal(i_arg1);
+        }
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutExeUS( IntPtr thisptr, UInt32 arg0, string arg1 );
 		public void SetShortcutExe( UInt32 arg0, string arg1 ) 
