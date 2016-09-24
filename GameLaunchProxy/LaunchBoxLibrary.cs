@@ -1,5 +1,6 @@
 ﻿using SevenZip;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -8,15 +9,33 @@ namespace GameLaunchProxy
 {
     public class LaunchBoxLibrary
     {
-        private XmlDocument doc;
-        private XmlElement root;
+        private List<XmlDocument> docs;
+        private List<XmlElement> roots;
         private Settings settings;
 
         public LaunchBoxLibrary(string launchBoxLibrary, Settings settings)
         {
-            doc = new XmlDocument();
-            doc.Load(launchBoxLibrary);
-            root = doc["LaunchBox"];
+            docs = new List<XmlDocument>();
+            roots = new List<XmlElement>();
+
+            if (File.Exists(launchBoxLibrary))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(launchBoxLibrary);
+                XmlElement root = doc["LaunchBox"];
+                docs.Add(doc);
+                roots.Add(root);
+            }else if(Directory.Exists(launchBoxLibrary))
+            {
+                Directory.EnumerateFiles(Path.Combine(launchBoxLibrary, "Platforms")).ToList().ForEach(file =>
+                {
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load(file);
+                    XmlElement root = doc["LaunchBox"];
+                    docs.Add(doc);
+                    roots.Add(root);
+                });
+            }
             this.settings = settings;
         }
 
@@ -24,53 +43,74 @@ namespace GameLaunchProxy
         {
             List<GameNameData> retVal = new List<GameNameData>();
 
-            int total = root.ChildNodes.Count;
+            //int total = root.ChildNodes.Count;
+            int total = roots.Sum(dr => dr.ChildNodes.Count);
             int counter = 0;
 
-            foreach (XmlNode xnode in root.ChildNodes)
+            for (int index = 0; index < docs.Count; index++)
             {
-                OnProgress(counter, total);
-                if (xnode.Name == "Game")
+                if (EditForm.KillWorker) return null;
+                XmlDocument doc = docs[index];
+                XmlElement root = roots[index];
+
+                foreach (XmlNode xnode in root.ChildNodes)
                 {
-                    string fullPath = xnode["ApplicationPath"].InnerText;
-                    string title = xnode["Title"].InnerText;
-                    string platform = xnode["Platform"].InnerText;
-                    bool hide = xnode["Hide"].InnerText == "true";
-
-                    List<string> innerFilenames = new List<string>();
-
-                    if (!fullPath.StartsWith("steam://") && !hide)
+                    if (EditForm.KillWorker) return null;
+                    OnProgress(counter, total);
+                    if (xnode.Name == "Game")
                     {
-                        switch (Path.GetExtension(fullPath))
+                        string fullPath = xnode["ApplicationPath"].InnerText;
+                        string title = xnode["Title"].InnerText;
+                        string platform = xnode["Platform"].InnerText;
+                        bool hide = xnode["Hide"].InnerText == "true";
+
+                        List<string> innerFilenames = new List<string>();
+
+                        if (!fullPath.StartsWith("steam://") && !hide)
                         {
-                            case ".7z":
-                            case ".zip":
-                                try
-                                {
-                                    if (!string.IsNullOrWhiteSpace(settings.Core.SevenZipLib) && File.Exists(settings.Core.SevenZipLib))
+                            switch (Path.GetExtension(fullPath))
+                            {
+                                case ".7z":
+                                case ".zip":
+                                    try
                                     {
-                                        SevenZipExtractor.SetLibraryPath(settings.Core.SevenZipLib);
-                                        SevenZipExtractor engine = new SevenZipExtractor(fullPath);
-                                        foreach (var item in engine.ArchiveFileData)
+                                        if (!string.IsNullOrWhiteSpace(settings.Core.SevenZipLib) && File.Exists(settings.Core.SevenZipLib))
                                         {
-                                            innerFilenames.Add(item.FileName);
+                                            SevenZipExtractor.SetLibraryPath(settings.Core.SevenZipLib);
+                                            SevenZipExtractor engine = new SevenZipExtractor(fullPath);
+                                            foreach (var item in engine.ArchiveFileData)
+                                            {
+                                                innerFilenames.Add(item.FileName);
+                                            }
                                         }
                                     }
+                                    catch { }
+                                    break;
+                            }
+
+
+                            if (innerFilenames.Count > 0)
+                            {
+                                foreach (string innerName in innerFilenames)
+                                {
+                                    GameNameData dat = new GameNameData()
+                                    {
+                                        OuterFileFullPath = fullPath,
+                                        OuterFileName = Path.GetFileName(fullPath),
+                                        InnerFileName = innerName,
+                                        Title = title,
+                                        Platform = platform
+                                    };
+
+                                    retVal.Add(dat);
                                 }
-                                catch { }
-                                break;
-                        }
-
-
-                        if (innerFilenames.Count > 0)
-                        {
-                            foreach (string innerName in innerFilenames)
+                            }
+                            else
                             {
                                 GameNameData dat = new GameNameData()
                                 {
                                     OuterFileFullPath = fullPath,
                                     OuterFileName = Path.GetFileName(fullPath),
-                                    InnerFileName = innerName,
                                     Title = title,
                                     Platform = platform
                                 };
@@ -78,22 +118,10 @@ namespace GameLaunchProxy
                                 retVal.Add(dat);
                             }
                         }
-                        else
-                        {
-                            GameNameData dat = new GameNameData()
-                            {
-                                OuterFileFullPath = fullPath,
-                                OuterFileName = Path.GetFileName(fullPath),
-                                Title = title,
-                                Platform = platform
-                            };
-
-                            retVal.Add(dat);
-                        }
                     }
+                    counter++;
+                    OnProgress(counter, total);
                 }
-                counter++;
-                OnProgress(counter, total);
             }
             
             return retVal;

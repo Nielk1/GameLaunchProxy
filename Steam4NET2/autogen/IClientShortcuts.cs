@@ -88,13 +88,15 @@ namespace Steam4NET
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutAppNameByIndexU( IntPtr thisptr, UInt32 uIndex );
 		public string GetShortcutAppNameByIndex( UInt32 uIndex ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutAppNameByIndexU>( this.Functions.GetShortcutAppNameByIndex5 )( this.ObjectAddress, uIndex ) ) ); 
+            //return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutAppNameByIndexU>( this.Functions.GetShortcutAppNameByIndex5 )( this.ObjectAddress, uIndex ) ) ); 
+            return InteropHelp.Utf8PtrToString(this.GetFunction<NativeGetShortcutAppNameByIndexU>(this.Functions.GetShortcutAppNameByIndex5)(this.ObjectAddress, uIndex));
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutExeByIndexU( IntPtr thisptr, UInt32 uIndex );
 		public string GetShortcutExeByIndex( UInt32 uIndex ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutExeByIndexU>( this.Functions.GetShortcutExeByIndex6 )( this.ObjectAddress, uIndex ) ) ); 
+            //return InteropHelp.Utf8PtrToString( this.GetFunction<NativeGetShortcutExeByIndexU>( this.Functions.GetShortcutExeByIndex6 )( this.ObjectAddress, uIndex ) ) ); 
+            return InteropHelp.Utf8PtrToString(this.GetFunction<NativeGetShortcutExeByIndexU>(this.Functions.GetShortcutExeByIndex6)(this.ObjectAddress, uIndex));
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeGetShortcutUserTagCountByIndexU( IntPtr thisptr, UInt32 uIndex );
@@ -106,7 +108,8 @@ namespace Steam4NET
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutUserTagByIndexUU( IntPtr thisptr, UInt32 uIndex, UInt32 arg1 );
 		public string GetShortcutUserTagByIndex( UInt32 uIndex, UInt32 arg1 ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutUserTagByIndexUU>( this.Functions.GetShortcutUserTagByIndex8 )( this.ObjectAddress, uIndex, arg1 ) ) ); 
+            //return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutUserTagByIndexUU>( this.Functions.GetShortcutUserTagByIndex8 )( this.ObjectAddress, uIndex, arg1 ) ) ); 
+            return InteropHelp.Utf8PtrToString(this.GetFunction<NativeGetShortcutUserTagByIndexUU>(this.Functions.GetShortcutUserTagByIndex8)(this.ObjectAddress, uIndex, arg1));
 		}
 		
 		[return: MarshalAs(UnmanagedType.I1)]
@@ -133,31 +136,36 @@ namespace Steam4NET
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutAppNameByAppIDU( IntPtr thisptr, UInt32 unAppID );
 		public string GetShortcutAppNameByAppID( UInt32 unAppID ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutAppNameByAppIDU>( this.Functions.GetShortcutAppNameByAppID12 )( this.ObjectAddress, unAppID ) ) ); 
+			//return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutAppNameByAppIDU>( this.Functions.GetShortcutAppNameByAppID12 )( this.ObjectAddress, unAppID ) ) ); 
+			return InteropHelp.Utf8PtrToString( this.GetFunction<NativeGetShortcutAppNameByAppIDU>( this.Functions.GetShortcutAppNameByAppID12 )( this.ObjectAddress, unAppID ) ); 
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutExeByAppIDU( IntPtr thisptr, UInt32 unAppID );
 		public string GetShortcutExeByAppID( UInt32 unAppID ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutExeByAppIDU>( this.Functions.GetShortcutExeByAppID13 )( this.ObjectAddress, unAppID ) ) ); 
+			//return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutExeByAppIDU>( this.Functions.GetShortcutExeByAppID13 )( this.ObjectAddress, unAppID ) ) );
+            return InteropHelp.Utf8PtrToString( this.GetFunction<NativeGetShortcutExeByAppIDU>( this.Functions.GetShortcutExeByAppID13 )( this.ObjectAddress, unAppID ) ); 
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutStartDirByAppIDU( IntPtr thisptr, UInt32 unAppID );
 		public string GetShortcutStartDirByAppID( UInt32 unAppID ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutStartDirByAppIDU>( this.Functions.GetShortcutStartDirByAppID14 )( this.ObjectAddress, unAppID ) ) ); 
+			//return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutStartDirByAppIDU>( this.Functions.GetShortcutStartDirByAppID14 )( this.ObjectAddress, unAppID ) ) );
+            return InteropHelp.Utf8PtrToString( this.GetFunction<NativeGetShortcutStartDirByAppIDU>( this.Functions.GetShortcutStartDirByAppID14 )( this.ObjectAddress, unAppID ) ); 
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutIconByAppIDU( IntPtr thisptr, UInt32 unAppID );
 		public string GetShortcutIconByAppID( UInt32 unAppID ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutIconByAppIDU>( this.Functions.GetShortcutIconByAppID15 )( this.ObjectAddress, unAppID ) ) ); 
+			//return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutIconByAppIDU>( this.Functions.GetShortcutIconByAppID15 )( this.ObjectAddress, unAppID ) ) );
+            return InteropHelp.Utf8PtrToString( this.GetFunction<NativeGetShortcutIconByAppIDU>( this.Functions.GetShortcutIconByAppID15 )( this.ObjectAddress, unAppID ) ); 
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutPathByAppIDU( IntPtr thisptr, UInt32 unAppID );
 		public string GetShortcutPathByAppID( UInt32 unAppID ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutPathByAppIDU>( this.Functions.GetShortcutPathByAppID16 )( this.ObjectAddress, unAppID ) ) ); 
+			//return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutPathByAppIDU>( this.Functions.GetShortcutPathByAppID16 )( this.ObjectAddress, unAppID ) ) );
+            return InteropHelp.Utf8PtrToString( this.GetFunction<NativeGetShortcutPathByAppIDU>( this.Functions.GetShortcutPathByAppID16 )( this.ObjectAddress, unAppID ) ); 
 		}
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate UInt32 NativeGetShortcutUserTagCountByAppIDU( IntPtr thisptr, UInt32 unAppID );
@@ -169,7 +177,8 @@ namespace Steam4NET
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate IntPtr NativeGetShortcutUserTagByAppIDUU( IntPtr thisptr, UInt32 unAppID, UInt32 arg1 );
 		public string GetShortcutUserTagByAppID( UInt32 unAppID, UInt32 arg1 ) 
 		{
-			return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutUserTagByAppIDUU>( this.Functions.GetShortcutUserTagByAppID18 )( this.ObjectAddress, unAppID, arg1 ) ) ); 
+			//return InteropHelp.DecodeANSIReturn( Marshal.PtrToStringAnsi( this.GetFunction<NativeGetShortcutUserTagByAppIDUU>( this.Functions.GetShortcutUserTagByAppID18 )( this.ObjectAddress, unAppID, arg1 ) ) ); 
+			return InteropHelp.Utf8PtrToString( this.GetFunction<NativeGetShortcutUserTagByAppIDUU>( this.Functions.GetShortcutUserTagByAppID18 )( this.ObjectAddress, unAppID, arg1 ) ); 
 		}
 		
 		[return: MarshalAs(UnmanagedType.I1)]
@@ -320,11 +329,24 @@ namespace Steam4NET
 			this.GetFunction<NativeSetShortcutStartDirUS>( this.Functions.SetShortcutStartDir30 )( this.ObjectAddress, arg0, arg1 ); 
 		}
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutIconUS( IntPtr thisptr, UInt32 arg0, string arg1 );
+		//[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutIconUS( IntPtr thisptr, UInt32 arg0, string arg1 );
+		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutIconUS( IntPtr thisptr, UInt32 arg0, IntPtr arg1 );
 		public void SetShortcutIcon( UInt32 arg0, string arg1 ) 
 		{
-			this.GetFunction<NativeSetShortcutIconUS>( this.Functions.SetShortcutIcon31 )( this.ObjectAddress, arg0, arg1 ); 
-		}
+			//this.GetFunction<NativeSetShortcutIconUS>( this.Functions.SetShortcutIcon31 )( this.ObjectAddress, arg0, arg1 );
+
+            byte[] _arg1 = Encoding.UTF8.GetBytes(arg1);
+
+            IntPtr i_arg1 = Marshal.AllocHGlobal(_arg1.Length + 1);
+
+            Marshal.Copy(_arg1, 0, i_arg1, _arg1.Length);
+
+            Marshal.WriteByte(i_arg1, _arg1.Length, 0x00);
+
+            this.GetFunction<NativeSetShortcutIconUS>(this.Functions.SetShortcutIcon31)(this.ObjectAddress, arg0, i_arg1);
+
+            Marshal.FreeHGlobal(i_arg1);
+        }
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeClearShortcutUserTagsU( IntPtr thisptr, UInt32 arg0 );
 		public void ClearShortcutUserTags( UInt32 arg0 ) 
@@ -332,11 +354,24 @@ namespace Steam4NET
 			this.GetFunction<NativeClearShortcutUserTagsU>( this.Functions.ClearShortcutUserTags32 )( this.ObjectAddress, arg0 ); 
 		}
 		
-		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeAddShortcutUserTagUS( IntPtr thisptr, UInt32 unAppID, string arg1 );
+		//[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeAddShortcutUserTagUS( IntPtr thisptr, UInt32 unAppID, string arg1 );
+		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeAddShortcutUserTagUS( IntPtr thisptr, UInt32 unAppID, IntPtr arg1 );
 		public void AddShortcutUserTag( UInt32 unAppID, string arg1 ) 
 		{
-			this.GetFunction<NativeAddShortcutUserTagUS>( this.Functions.AddShortcutUserTag33 )( this.ObjectAddress, unAppID, arg1 ); 
-		}
+			//this.GetFunction<NativeAddShortcutUserTagUS>( this.Functions.AddShortcutUserTag33 )( this.ObjectAddress, unAppID, arg1 );
+
+            byte[] _arg1 = Encoding.UTF8.GetBytes(arg1);
+
+            IntPtr i_arg1 = Marshal.AllocHGlobal(_arg1.Length + 1);
+
+            Marshal.Copy(_arg1, 0, i_arg1, _arg1.Length);
+
+            Marshal.WriteByte(i_arg1, _arg1.Length, 0x00);
+
+            this.GetFunction<NativeAddShortcutUserTagUS>(this.Functions.AddShortcutUserTag33)(this.ObjectAddress, unAppID, i_arg1);
+
+            Marshal.FreeHGlobal(i_arg1);
+        }
 		
 		[UnmanagedFunctionPointer(CallingConvention.ThisCall)] private delegate void NativeSetShortcutHiddenUB( IntPtr thisptr, UInt32 unAppID, [MarshalAs(UnmanagedType.I1)] bool arg1 );
 		public void SetShortcutHidden( UInt32 unAppID, bool arg1 ) 

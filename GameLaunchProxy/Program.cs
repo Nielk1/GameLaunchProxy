@@ -310,35 +310,42 @@ namespace GameLaunchProxy
                         }
 
                         UInt64 steamShortcutId = 0;
-                        for (int x = 0; x < names.Count && steamShortcutId == 0; x++)
-                        {
-                            LogMessage($"Searching for item #{x}");
-
-                            steamShortcutId = SteamContext.GetInstance().GetShortcutID(names[x].Item1, proxyPath, settings.Core.SteamShortcutFilePath);
-
-                            LogMessage($"Shortcut ID Candidate:\t{steamShortcutId}");
-
-                            if (steamShortcutId != 0 && names[x].Item2)
+                        try {
+                            for (int x = 0; x < names.Count && steamShortcutId == 0; x++)
                             {
-                                try {
-                                    //UInt64 oldSteamShortcutId = steamShortcutId;
-                                    //string oldSteamShortcutName = names[x].Item1;
-                                    steamShortcutId = SteamContext.GetInstance().RenameLiveShortcut(steamShortcutId, name);
+                                LogMessage($"Searching for item #{x}");
 
-                                    if (steamShortcutId != 0)
+                                steamShortcutId = SteamContext.GetInstance().GetShortcutID(names[x].Item1, proxyPath, settings.Core.SteamShortcutFilePath);
+
+                                LogMessage($"Shortcut ID Candidate:\t{steamShortcutId}");
+
+                                if (steamShortcutId != 0 && names[x].Item2)
+                                {
+                                    try {
+                                        //UInt64 oldSteamShortcutId = steamShortcutId;
+                                        //string oldSteamShortcutName = names[x].Item1;
+                                        steamShortcutId = SteamContext.GetInstance().RenameLiveShortcut(steamShortcutId, name);
+
+                                        if (steamShortcutId != 0)
+                                        {
+                                            gameRestoreData.SteamShortcutID = steamShortcutId;
+                                            gameRestoreData.OldSteamShortcutname = names[x].Item1;
+                                            File.WriteAllText("GameRestoreData.json", JsonConvert.SerializeObject(gameRestoreData));
+                                            break; // loop will terminate anyway but why not
+                                        }
+                                    }
+                                    catch
                                     {
-                                        gameRestoreData.SteamShortcutID = steamShortcutId;
-                                        gameRestoreData.OldSteamShortcutname = names[x].Item1;
-                                        File.WriteAllText("GameRestoreData.json", JsonConvert.SerializeObject(gameRestoreData));
-                                        break; // loop will terminate anyway but why not
+                                        LogMessage($"Failed to rename {steamShortcutId}");
+                                        steamShortcutId = 0;
                                     }
                                 }
-                                catch
-                                {
-                                    LogMessage($"Failed to rename {steamShortcutId}");
-                                    steamShortcutId = 0;
-                                }
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogMessage("Something went very wrong\t{ex.ToString()}");
+                            LogMessage($"{ex.Message}");
                         }
                         LogMessage($"Done looking for steam shortcut");
                         #endregion Find Shortcut

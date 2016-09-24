@@ -32,6 +32,7 @@ namespace GameLaunchProxy
         bool ignoreAggressiveFocusChanges = false;
 
         Thread worker = null;
+        static internal volatile bool KillWorker = false;
 
         public EditForm()
         {
@@ -120,7 +121,10 @@ namespace GameLaunchProxy
                     txtLaunchBoxLibrary.TextChanged -= txtLaunchBoxLibrary_TextChanged;
                     txtLaunchBoxLibrary.Text = settings.Core.LaunchBoxLibrary;
                     txtLaunchBoxLibrary.TextChanged += txtLaunchBoxLibrary_TextChanged;
-                    btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null && File.Exists(settings.Core.LaunchBoxLibrary) && (worker == null || !worker.IsAlive);
+                    btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null
+                          && (File.Exists(settings.Core.LaunchBoxLibrary) || ((Path.GetFileName(settings.Core.LaunchBoxLibrary) == "Data")
+                                                                               && Directory.Exists(settings.Core.LaunchBoxLibrary)))
+                          && (worker == null || !worker.IsAlive);
                     break;
                 case "Core.SevenZipLib":
                     txt7z.TextChanged -= txt7z_TextChanged;
@@ -168,7 +172,26 @@ namespace GameLaunchProxy
         {
             if (ofdLaunchBoxLibrary.ShowDialog() == DialogResult.OK)
             {
-                settings.Core.LaunchBoxLibrary = ofdLaunchBoxLibrary.FileName;
+                if(Path.GetFileName(ofdLaunchBoxLibrary.FileName) == "LaunchBox.xml")
+                {
+                    string DataPath = Path.Combine(Path.GetDirectoryName(ofdLaunchBoxLibrary.FileName), "Data");
+                    if(Directory.Exists(DataPath))
+                    {
+                        settings.Core.LaunchBoxLibrary = DataPath;
+                    }
+                    else
+                    {
+                        settings.Core.LaunchBoxLibrary = ofdLaunchBoxLibrary.FileName;
+                    }
+                }
+                else
+                {
+                    string DataPath = Path.GetDirectoryName(ofdLaunchBoxLibrary.FileName);
+                    if (Directory.Exists(DataPath))
+                    {
+                        settings.Core.LaunchBoxLibrary = DataPath;
+                    }
+                }
             }
         }
         private void txtLaunchBoxLibrary_TextChanged(object sender, EventArgs e)
@@ -192,6 +215,11 @@ namespace GameLaunchProxy
         #region SteamShortcutNamesTab
         private void btnScrapeLaunchBox_Click(object sender, EventArgs e)
         {
+            StartLaunchBoxScrape(settings.Core.LaunchBoxLibrary);
+        }
+
+        private void StartLaunchBoxScrape(string dataFilePath)
+        {
             if (worker == null || !worker.IsAlive)
             {
                 btnScrapeLaunchBox.Enabled = false;
@@ -204,17 +232,18 @@ namespace GameLaunchProxy
 
                 worker = new Thread(() =>
                 {
-                    LaunchBoxLibrary lib = new LaunchBoxLibrary(settings.Core.LaunchBoxLibrary, settings);
+                    LaunchBoxLibrary lib = new LaunchBoxLibrary(dataFilePath, settings);
                     DateTime time = DateTime.UtcNow;
 
                     lib.Progress += delegate (object _sender, int counter, int total)
                     {
+                        if (this == null || this.IsDisposed || KillWorker) return;
+
                         MethodInvoker mi = new MethodInvoker(() =>
                         {
                             pbScrapeLaunchBox.Style = ProgressBarStyle.Blocks;
                             pbScrapeLaunchBox.Maximum = total;
                             pbScrapeLaunchBox.Value = counter;
-
 
                             {
                                 TimeSpan elap = DateTime.UtcNow - time;
@@ -236,6 +265,7 @@ namespace GameLaunchProxy
                                 }
                             }
                         });
+
                         if (pbScrapeLaunchBox.InvokeRequired)
                         {
                             pbScrapeLaunchBox.Invoke(mi);
@@ -246,7 +276,35 @@ namespace GameLaunchProxy
                         }
                     };
 
+                    List<GameNameData> knownData;
+                    if (File.Exists("names_launchbox.json"))
+                    {
+                        knownData = JsonConvert.DeserializeObject<List<GameNameData>>(File.ReadAllText("names_launchbox.json"));
+                    }
+                    else
+                    {
+                        knownData = new List<GameNameData>();
+                    }
+
                     gameDat = lib.GetGameData();
+                    if (KillWorker) return;
+
+                    HashSet<int> idMap = new HashSet<int>();
+                    Dictionary<int, List<GameNameData>> idMapDat = new Dictionary<int, List<GameNameData>>();
+                    gameDat.ForEach(dr =>
+                    {
+                        int hasCode = dr.GetHashCode();
+                        idMap.Add(hasCode);
+                        if (!idMapDat.ContainsKey(hasCode)) idMapDat.Add(hasCode, new List<GameNameData>());
+                        idMapDat[hasCode].Add(dr);
+                    });
+                    gameDat = gameDat.Union(knownData.Where(dr =>
+                    {
+                        int hashCode = dr.GetHashCode();
+                        if (!idMap.Contains(hashCode)) return true; // we don't know this hash code, it's new
+                        return !idMapDat[hashCode].Any(dx => dx.Equals(dr)); // I don't trust the hash code enough
+                    })).ToList();
+
                     File.WriteAllText("names_launchbox.json", JsonConvert.SerializeObject(gameDat));
                     this.Invoke((MethodInvoker)delegate
                     {
@@ -254,7 +312,10 @@ namespace GameLaunchProxy
                         pbScrapeLaunchBox.Maximum = 0;
                         worker = null;
                         pbScrapeLaunchBox.Enabled = false;
-                        btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null && File.Exists(settings.Core.LaunchBoxLibrary) && (worker == null || !worker.IsAlive);
+                        btnScrapeLaunchBox.Enabled = settings.Core.LaunchBoxLibrary != null
+                                                  && (File.Exists(settings.Core.LaunchBoxLibrary) || (   (Path.GetFileName(settings.Core.LaunchBoxLibrary) == "Data")
+                                                                                                       && Directory.Exists(settings.Core.LaunchBoxLibrary)))
+                                                  && (worker == null || !worker.IsAlive);
                     });
 
 
@@ -273,6 +334,14 @@ namespace GameLaunchProxy
                     }*/
                 });
                 worker.Start();
+            }
+        }
+
+        private void btnClearLaunchBoxCache_Click(object sender, EventArgs e)
+        {
+            if (File.Exists("names_launchbox.json"))
+            {
+                File.Delete("names_launchbox.json");
             }
         }
 
@@ -372,8 +441,6 @@ namespace GameLaunchProxy
                 {
                     launchbox_names = new List<GameNameData>();
                 }
-
-
 
                 List<SteamShortcut> newData = launchbox_names.Select(dr =>
                 {
@@ -768,6 +835,47 @@ namespace GameLaunchProxy
             txtFrontEndShortcut.AppendText(" -name \"%gamename% (%platformname%)\" -fallbackname \"%platformname%\" -proxy ", Color.Black);
             txtFrontEndShortcut.AppendText("\"" + emulator + "\"", Color.Blue);
             txtFrontEndShortcut.AppendText(" " + command, Color.Green);
+        }
+
+        private void btnScrapeLaunchBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(btnScrapeLaunchBox.Enabled)
+                switch (e.Button)
+                {
+                    case MouseButtons.Right:
+                        {
+                            if (settings.Core.LaunchBoxLibrary != null && settings.Core.LaunchBoxLibrary.Length > 0 && Path.GetFileName(settings.Core.LaunchBoxLibrary) == "Data")
+                            {
+                                cmsPlatforms.Items.Clear();
+                                string platformdir = Path.Combine(settings.Core.LaunchBoxLibrary, "Platforms");
+                                string[] platforms = Directory.GetFiles(platformdir);
+                                if (platforms.Length > 0)
+                                {
+                                    platforms.ToList().ForEach(platFile =>
+                                    {
+                                        ToolStripItem newItem = cmsPlatforms.Items.Add(Path.GetFileNameWithoutExtension(platFile));
+                                        string platFile_ = platFile;
+                                        newItem.Click += delegate (object sender_, EventArgs e_)
+                                        {
+                                            StartLaunchBoxScrape(platFile_);
+                                        };
+                                    });
+                                    cmsPlatforms.Show(this, new Point(e.X, e.Y));//places the menu at the pointer position
+                                }
+                            }
+                        }
+                        break;
+                }
+        }
+
+        private void EditForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            KillWorker = true;
+            while (worker != null && worker.IsAlive)
+            {
+                Application.DoEvents();
+                Thread.Sleep(100);
+            }
         }
     }
 

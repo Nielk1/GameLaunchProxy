@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditForm));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -96,6 +97,8 @@
             this.ofdSteamUserDataShortcuts = new System.Windows.Forms.OpenFileDialog();
             this.ofdLaunchBoxLibrary = new System.Windows.Forms.OpenFileDialog();
             this.ofd7z = new System.Windows.Forms.OpenFileDialog();
+            this.cmsPlatforms = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.btnClearLaunchBoxCache = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -509,16 +512,16 @@
             this.panel2.Controls.Add(this.btn7z);
             this.panel2.Controls.Add(this.txt7z);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(176, 60);
+            this.panel2.Location = new System.Drawing.Point(146, 60);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(500, 30);
+            this.panel2.Size = new System.Drawing.Size(530, 30);
             this.panel2.TabIndex = 6;
             // 
             // btn7z
             // 
             this.btn7z.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn7z.Location = new System.Drawing.Point(422, 3);
+            this.btn7z.Location = new System.Drawing.Point(452, 3);
             this.btn7z.Name = "btn7z";
             this.btn7z.Size = new System.Drawing.Size(75, 23);
             this.btn7z.TabIndex = 3;
@@ -532,7 +535,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txt7z.Location = new System.Drawing.Point(3, 5);
             this.txt7z.Name = "txt7z";
-            this.txt7z.Size = new System.Drawing.Size(413, 20);
+            this.txt7z.Size = new System.Drawing.Size(443, 20);
             this.txt7z.TabIndex = 0;
             this.txt7z.TextChanged += new System.EventHandler(this.txt7z_TextChanged);
             // 
@@ -551,16 +554,16 @@
             this.panel4.Controls.Add(this.btnLaunchBoxLibraryBrowse);
             this.panel4.Controls.Add(this.txtLaunchBoxLibrary);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(176, 30);
+            this.panel4.Location = new System.Drawing.Point(146, 30);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(500, 30);
+            this.panel4.Size = new System.Drawing.Size(530, 30);
             this.panel4.TabIndex = 4;
             // 
             // btnLaunchBoxLibraryBrowse
             // 
             this.btnLaunchBoxLibraryBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLaunchBoxLibraryBrowse.Location = new System.Drawing.Point(422, 3);
+            this.btnLaunchBoxLibraryBrowse.Location = new System.Drawing.Point(452, 3);
             this.btnLaunchBoxLibraryBrowse.Name = "btnLaunchBoxLibraryBrowse";
             this.btnLaunchBoxLibraryBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnLaunchBoxLibraryBrowse.TabIndex = 3;
@@ -574,7 +577,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLaunchBoxLibrary.Location = new System.Drawing.Point(3, 5);
             this.txtLaunchBoxLibrary.Name = "txtLaunchBoxLibrary";
-            this.txtLaunchBoxLibrary.Size = new System.Drawing.Size(413, 20);
+            this.txtLaunchBoxLibrary.Size = new System.Drawing.Size(443, 20);
             this.txtLaunchBoxLibrary.TabIndex = 0;
             this.txtLaunchBoxLibrary.TextChanged += new System.EventHandler(this.txtLaunchBoxLibrary_TextChanged);
             // 
@@ -584,9 +587,9 @@
             this.label9.Location = new System.Drawing.Point(3, 39);
             this.label9.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(170, 13);
+            this.label9.Size = new System.Drawing.Size(123, 13);
             this.label9.TabIndex = 3;
-            this.label9.Text = "LaunchBox Library LaunchBox.xml";
+            this.label9.Text = "LaunchBox Library/Data";
             // 
             // label8
             // 
@@ -604,16 +607,16 @@
             this.panel3.Controls.Add(this.txtSteamUserData);
             this.panel3.Controls.Add(this.btnSteamUserDataFind);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(176, 0);
+            this.panel3.Location = new System.Drawing.Point(146, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(500, 30);
+            this.panel3.Size = new System.Drawing.Size(530, 30);
             this.panel3.TabIndex = 2;
             // 
             // btnSteamUserDataBrowse
             // 
             this.btnSteamUserDataBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSteamUserDataBrowse.Location = new System.Drawing.Point(422, 3);
+            this.btnSteamUserDataBrowse.Location = new System.Drawing.Point(452, 3);
             this.btnSteamUserDataBrowse.Name = "btnSteamUserDataBrowse";
             this.btnSteamUserDataBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnSteamUserDataBrowse.TabIndex = 3;
@@ -627,14 +630,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSteamUserData.Location = new System.Drawing.Point(3, 5);
             this.txtSteamUserData.Name = "txtSteamUserData";
-            this.txtSteamUserData.Size = new System.Drawing.Size(332, 20);
+            this.txtSteamUserData.Size = new System.Drawing.Size(362, 20);
             this.txtSteamUserData.TabIndex = 0;
             this.txtSteamUserData.TextChanged += new System.EventHandler(this.txtSteamUserData_TextChanged);
             // 
             // btnSteamUserDataFind
             // 
             this.btnSteamUserDataFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSteamUserDataFind.Location = new System.Drawing.Point(341, 3);
+            this.btnSteamUserDataFind.Location = new System.Drawing.Point(371, 3);
             this.btnSteamUserDataFind.Name = "btnSteamUserDataFind";
             this.btnSteamUserDataFind.Size = new System.Drawing.Size(75, 23);
             this.btnSteamUserDataFind.TabIndex = 2;
@@ -645,6 +648,7 @@
             // tabSteamShortcutNames
             // 
             this.tabSteamShortcutNames.AutoScroll = true;
+            this.tabSteamShortcutNames.Controls.Add(this.btnClearLaunchBoxCache);
             this.tabSteamShortcutNames.Controls.Add(this.tableLayoutPanel3);
             this.tabSteamShortcutNames.Controls.Add(this.groupBox1);
             this.tabSteamShortcutNames.Controls.Add(this.pbScrapeLaunchBox);
@@ -822,7 +826,7 @@
             this.btnLoadPlatformNameAdjustment.Name = "btnLoadPlatformNameAdjustment";
             this.btnLoadPlatformNameAdjustment.Size = new System.Drawing.Size(212, 23);
             this.btnLoadPlatformNameAdjustment.TabIndex = 5;
-            this.btnLoadPlatformNameAdjustment.Text = "Load Platform List";
+            this.btnLoadPlatformNameAdjustment.Text = "Load && Generate Platform List";
             this.btnLoadPlatformNameAdjustment.UseVisualStyleBackColor = true;
             this.btnLoadPlatformNameAdjustment.Click += new System.EventHandler(this.btnLoadPlatformNameAdjustment_Click);
             // 
@@ -846,7 +850,7 @@
             this.pbScrapeLaunchBox.Location = new System.Drawing.Point(124, 6);
             this.pbScrapeLaunchBox.MarqueeAnimationSpeed = 1;
             this.pbScrapeLaunchBox.Name = "pbScrapeLaunchBox";
-            this.pbScrapeLaunchBox.Size = new System.Drawing.Size(544, 23);
+            this.pbScrapeLaunchBox.Size = new System.Drawing.Size(457, 23);
             this.pbScrapeLaunchBox.TabIndex = 1;
             // 
             // btnScrapeLaunchBox
@@ -858,6 +862,7 @@
             this.btnScrapeLaunchBox.Text = "Scrape LaunchBox";
             this.btnScrapeLaunchBox.UseVisualStyleBackColor = true;
             this.btnScrapeLaunchBox.Click += new System.EventHandler(this.btnScrapeLaunchBox_Click);
+            this.btnScrapeLaunchBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnScrapeLaunchBox_MouseDown);
             // 
             // tabPage1
             // 
@@ -876,11 +881,28 @@
             // 
             // ofdLaunchBoxLibrary
             // 
-            this.ofdLaunchBoxLibrary.Filter = "LaunchBox.xml|LaunchBox.xml";
+            this.ofdLaunchBoxLibrary.Filter = "Launchbox Data folder|BigBoxSettings.xml;Emulators.xml;Platforms.xml;SavedFilters" +
+    ".xml;Settings.xml|LaunchBox.xml|LaunchBox.xml";
             // 
             // ofd7z
             // 
             this.ofd7z.Filter = "7z Library|7z*.dll";
+            // 
+            // cmsPlatforms
+            // 
+            this.cmsPlatforms.Name = "cmsPlatforms";
+            this.cmsPlatforms.Size = new System.Drawing.Size(61, 4);
+            // 
+            // btnClearLaunchBoxCache
+            // 
+            this.btnClearLaunchBoxCache.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearLaunchBoxCache.Location = new System.Drawing.Point(587, 6);
+            this.btnClearLaunchBoxCache.Name = "btnClearLaunchBoxCache";
+            this.btnClearLaunchBoxCache.Size = new System.Drawing.Size(81, 23);
+            this.btnClearLaunchBoxCache.TabIndex = 9;
+            this.btnClearLaunchBoxCache.Text = "Clear Cache";
+            this.btnClearLaunchBoxCache.UseVisualStyleBackColor = true;
+            this.btnClearLaunchBoxCache.Click += new System.EventHandler(this.btnClearLaunchBoxCache_Click);
             // 
             // EditForm
             // 
@@ -894,6 +916,7 @@
             this.MinimumSize = new System.Drawing.Size(700, 358);
             this.Name = "EditForm";
             this.Text = "Game Launch Proxy";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EditForm_FormClosing);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
@@ -999,6 +1022,8 @@
         private System.Windows.Forms.Button btn7z;
         private System.Windows.Forms.TextBox txt7z;
         private System.Windows.Forms.OpenFileDialog ofd7z;
+        private System.Windows.Forms.ContextMenuStrip cmsPlatforms;
+        private System.Windows.Forms.Button btnClearLaunchBoxCache;
     }
 }
 
