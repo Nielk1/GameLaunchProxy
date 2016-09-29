@@ -344,7 +344,7 @@ namespace GameLaunchProxy
                         }
                         catch (Exception ex)
                         {
-                            LogMessage("Something went very wrong\t{ex.ToString()}");
+                            LogMessage($"Something went very wrong\t{ex.ToString()}");
                             LogMessage($"{ex.Message}");
                         }
                         LogMessage($"Done looking for steam shortcut");

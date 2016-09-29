@@ -130,7 +130,7 @@ namespace GameLaunchProxy
                     txt7z.TextChanged -= txt7z_TextChanged;
                     txt7z.Text = settings.Core.SevenZipLib;
                     txt7z.TextChanged += txt7z_TextChanged;
-                    btn7z.Enabled = settings.Core.SevenZipLib != null && File.Exists(settings.Core.SevenZipLib) && (worker == null || !worker.IsAlive);
+                    //btn7z.Enabled = settings.Core.SevenZipLib != null && File.Exists(settings.Core.SevenZipLib) && (worker == null || !worker.IsAlive);
                     break;
             }
             SaveSettings();
