@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GameLaunchProxy</RootNamespace>
     <AssemblyName>GameLaunchProxy</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -58,10 +58,6 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SevenZipSharp, Version=1.0.5.0, Culture=neutral, PublicKeyToken=c8ff6ba0184838bb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SevenZipSharp.Net45.1.0.5\lib\net45\SevenZipSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -162,6 +158,10 @@
     <None Include="Resources\GameLaunchProxy.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\CustomForks\open-steamworks\Steam4NET2\Steam4NET2\Steam4NET.csproj">
+      <Project>{1a204257-fe82-4bbe-9ed4-40694821c31f}</Project>
+      <Name>Steam4NET</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Keyboard\Keyboard.csproj">
       <Project>{fe61ad51-a5bc-4133-8657-ae21d1b98afe}</Project>
       <Name>Keyboard</Name>
@@ -169,11 +169,6 @@
     <ProjectReference Include="..\Liron.Windows.Forms\Liron.Windows.Forms.csproj">
       <Project>{1eb31359-e7f5-42ed-8794-49f53e1a9cf1}</Project>
       <Name>Liron.Windows.Forms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Steam4NET2\Steam4NET.csproj">
-      <Project>{1a204257-fe82-4bbe-9ed4-40694821c31f}</Project>
-      <Name>Steam4NET</Name>
-      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

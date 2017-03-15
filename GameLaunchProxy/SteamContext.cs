@@ -364,7 +364,11 @@ namespace GameLaunchProxy
                             uint shortcutid;
                             if (shortcut.OpenVR)
                             {
-                                shortcutid = ClientShortcuts.AddOpenVRShortcut(shortcut.appname, shortcut.exe, shortcut.icon, shortcut.ShortcutPath);
+                                shortcutid = ClientShortcuts.AddOpenVRShortcut(
+                                    shortcut.appname,
+                                    shortcut.exe.Trim('"'), // system adds quotes automaticly
+                                    shortcut.icon.Trim('"'), // system adds quotes automaticly
+                                    shortcut.ShortcutPath.Trim('"'));
                             }
                             else
                             {

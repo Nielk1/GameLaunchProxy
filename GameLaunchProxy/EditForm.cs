@@ -289,20 +289,15 @@ namespace GameLaunchProxy
                     gameDat = lib.GetGameData();
                     if (KillWorker) return;
 
-                    HashSet<int> idMap = new HashSet<int>();
-                    Dictionary<int, List<GameNameData>> idMapDat = new Dictionary<int, List<GameNameData>>();
+                    Dictionary<string, List<GameNameData>> idMapDat = new Dictionary<string, List<GameNameData>>();
                     gameDat.ForEach(dr =>
                     {
-                        int hasCode = dr.GetHashCode();
-                        idMap.Add(hasCode);
-                        if (!idMapDat.ContainsKey(hasCode)) idMapDat.Add(hasCode, new List<GameNameData>());
-                        idMapDat[hasCode].Add(dr);
+                        if (!idMapDat.ContainsKey(dr.GUID)) idMapDat.Add(dr.GUID, new List<GameNameData>());
+                        idMapDat[dr.GUID].Add(dr);
                     });
                     gameDat = gameDat.Union(knownData.Where(dr =>
                     {
-                        int hashCode = dr.GetHashCode();
-                        if (!idMap.Contains(hashCode)) return true; // we don't know this hash code, it's new
-                        return !idMapDat[hashCode].Any(dx => dx.Equals(dr)); // I don't trust the hash code enough
+                        return !idMapDat[dr.GUID].Any(dx => dx.Equals(dr)); // I don't trust the hash code enough
                     })).ToList();
 
                     File.WriteAllText("names_launchbox.json", JsonConvert.SerializeObject(gameDat));
@@ -832,7 +827,7 @@ namespace GameLaunchProxy
             txtFrontEndShortcut.AppendText("\"" + proxyPath + "\"", Color.Red);
             if (rbProxySteam.Checked) txtFrontEndShortcut.AppendText(" -steam", Color.Black);
             if (rbProxyBigPicture.Checked) txtFrontEndShortcut.AppendText(" -steambigpicture", Color.Black);
-            txtFrontEndShortcut.AppendText(" -name \"%gamename% (%platformname%)\" -fallbackname \"%platformname%\" -proxy ", Color.Black);
+            txtFrontEndShortcut.AppendText(" -gameid %gameid% -name \"%gamename% (%platformname%)\" -fallbackname \"%platformname%\" -proxy ", Color.Black);
             txtFrontEndShortcut.AppendText("\"" + emulator + "\"", Color.Blue);
             txtFrontEndShortcut.AppendText(" " + command, Color.Green);
         }

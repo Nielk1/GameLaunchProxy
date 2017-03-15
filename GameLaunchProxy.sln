@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLaunchProxy", "GameLaunchProxy\GameLaunchProxy.csproj", "{884C6405-9EA4-44DF-9D48-FEB95F927CB5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Liron.Windows.Forms", "Liron.Windows.Forms\Liron.Windows.Forms.csproj", "{1EB31359-E7F5-42ED-8794-49F53E1A9CF1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam4NET", "Steam4NET2\Steam4NET.csproj", "{1A204257-FE82-4BBE-9ED4-40694821C31F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keyboard", "Keyboard\Keyboard.csproj", "{FE61AD51-A5BC-4133-8657-AE21D1B98AFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameSelectorProxy", "GameSelectorProxy\GameSelectorProxy.csproj", "{2E1F9BA1-2542-4179-8EAB-CC1A668F6C5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamProxy", "SteamProxy\SteamProxy.csproj", "{99F7BDCF-7960-462F-9D10-D0E714795317}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam4NET", "open-steamworks\Steam4NET2\Steam4NET2\Steam4NET.csproj", "{1A204257-FE82-4BBE-9ED4-40694821C31F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,14 +39,6 @@ Global
 		{1EB31359-E7F5-42ED-8794-49F53E1A9CF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EB31359-E7F5-42ED-8794-49F53E1A9CF1}.Release|x86.ActiveCfg = Release|Any CPU
 		{1EB31359-E7F5-42ED-8794-49F53E1A9CF1}.Release|x86.Build.0 = Release|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|x86.Build.0 = Debug|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|x86.ActiveCfg = Release|Any CPU
-		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|x86.Build.0 = Release|Any CPU
 		{FE61AD51-A5BC-4133-8657-AE21D1B98AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FE61AD51-A5BC-4133-8657-AE21D1B98AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE61AD51-A5BC-4133-8657-AE21D1B98AFE}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -71,6 +63,14 @@ Global
 		{99F7BDCF-7960-462F-9D10-D0E714795317}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99F7BDCF-7960-462F-9D10-D0E714795317}.Release|x86.ActiveCfg = Release|Any CPU
 		{99F7BDCF-7960-462F-9D10-D0E714795317}.Release|x86.Build.0 = Release|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A204257-FE82-4BBE-9ED4-40694821C31F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

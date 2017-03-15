@@ -46,14 +46,11 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Page_5 = new Liron.Windows.Forms.MultiPanelPage();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.Page_6 = new Liron.Windows.Forms.MultiPanelPage();
-            this.textBox5 = new System.Windows.Forms.TextBox();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.radioButton5 = new System.Windows.Forms.RadioButton();
-            this.radioButton6 = new System.Windows.Forms.RadioButton();
             this.multiPanel1.SuspendLayout();
             this.Page_1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -61,7 +58,6 @@
             this.Page_3.SuspendLayout();
             this.Page_4.SuspendLayout();
             this.Page_5.SuspendLayout();
-            this.Page_6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -106,7 +102,6 @@
             this.multiPanel1.Controls.Add(this.Page_3);
             this.multiPanel1.Controls.Add(this.Page_4);
             this.multiPanel1.Controls.Add(this.Page_5);
-            this.multiPanel1.Controls.Add(this.Page_6);
             this.multiPanel1.Location = new System.Drawing.Point(146, 40);
             this.multiPanel1.Name = "multiPanel1";
             this.multiPanel1.SelectedPage = this.Page_1;
@@ -289,7 +284,7 @@
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox1.Size = new System.Drawing.Size(546, 136);
             this.textBox1.TabIndex = 32;
-            this.textBox1.Text = "https://github.com/m4dEngi/open-steamworks";
+            this.textBox1.Text = "https://github.com/Nielk1/open-steamworks";
             // 
             // Page_5
             // 
@@ -316,32 +311,6 @@
             this.textBox4.Size = new System.Drawing.Size(546, 136);
             this.textBox4.TabIndex = 33;
             this.textBox4.Text = "https://github.com/EasyAsABC123/Keyboard";
-            // 
-            // Page_6
-            // 
-            this.Page_6.Controls.Add(this.textBox5);
-            this.Page_6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Page_6.Location = new System.Drawing.Point(0, 0);
-            this.Page_6.Name = "Page_6";
-            this.Page_6.Size = new System.Drawing.Size(546, 136);
-            this.Page_6.TabIndex = 5;
-            this.Page_6.Text = "Page_6";
-            // 
-            // textBox5
-            // 
-            this.textBox5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            this.textBox5.Location = new System.Drawing.Point(0, 0);
-            this.textBox5.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox5.Multiline = true;
-            this.textBox5.Name = "textBox5";
-            this.textBox5.ReadOnly = true;
-            this.textBox5.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox5.Size = new System.Drawing.Size(546, 136);
-            this.textBox5.TabIndex = 34;
-            this.textBox5.Text = resources.GetString("textBox5.Text");
             // 
             // logoPictureBox
             // 
@@ -419,29 +388,12 @@
             this.radioButton5.UseVisualStyleBackColor = true;
             this.radioButton5.Click += new System.EventHandler(this.radioButtonPage_CheckedChanged);
             // 
-            // radioButton6
-            // 
-            this.radioButton6.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton6.AutoSize = true;
-            this.radioButton6.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(54)))), ((int)(((byte)(54)))), ((int)(((byte)(54)))));
-            this.radioButton6.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.radioButton6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            this.radioButton6.Location = new System.Drawing.Point(483, 9);
-            this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(93, 25);
-            this.radioButton6.TabIndex = 39;
-            this.radioButton6.Text = "SevenZipSharp";
-            this.radioButton6.UseVisualStyleBackColor = true;
-            this.radioButton6.Click += new System.EventHandler(this.radioButtonPage_CheckedChanged);
-            // 
             // AboutBox1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(37)))), ((int)(((byte)(37)))));
             this.ClientSize = new System.Drawing.Size(705, 188);
-            this.Controls.Add(this.radioButton6);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton3);
@@ -471,8 +423,6 @@
             this.Page_4.PerformLayout();
             this.Page_5.ResumeLayout(false);
             this.Page_5.PerformLayout();
-            this.Page_6.ResumeLayout(false);
-            this.Page_6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -504,8 +454,5 @@
         private System.Windows.Forms.RadioButton radioButton5;
         private Liron.Windows.Forms.MultiPanelPage Page_5;
         private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.RadioButton radioButton6;
-        private Liron.Windows.Forms.MultiPanelPage Page_6;
-        private System.Windows.Forms.TextBox textBox5;
     }
 }

@@ -1,4 +1,4 @@
-﻿using SevenZip;
+﻿//using SevenZip;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -60,63 +60,21 @@ namespace GameLaunchProxy
                     if (xnode.Name == "Game")
                     {
                         string fullPath = xnode["ApplicationPath"].InnerText;
+                        string guid = xnode["ID"].InnerText;
                         string title = xnode["Title"].InnerText;
                         string platform = xnode["Platform"].InnerText;
                         bool hide = xnode["Hide"].InnerText == "true";
 
-                        List<string> innerFilenames = new List<string>();
-
                         if (!fullPath.StartsWith("steam://") && !hide)
                         {
-                            switch (Path.GetExtension(fullPath))
+                            GameNameData dat = new GameNameData()
                             {
-                                case ".7z":
-                                case ".zip":
-                                    try
-                                    {
-                                        if (!string.IsNullOrWhiteSpace(settings.Core.SevenZipLib) && File.Exists(settings.Core.SevenZipLib))
-                                        {
-                                            SevenZipExtractor.SetLibraryPath(settings.Core.SevenZipLib);
-                                            SevenZipExtractor engine = new SevenZipExtractor(fullPath);
-                                            foreach (var item in engine.ArchiveFileData)
-                                            {
-                                                innerFilenames.Add(item.FileName);
-                                            }
-                                        }
-                                    }
-                                    catch { }
-                                    break;
-                            }
+                                GUID = guid,
+                                Title = title,
+                                Platform = platform
+                            };
 
-
-                            if (innerFilenames.Count > 0)
-                            {
-                                foreach (string innerName in innerFilenames)
-                                {
-                                    GameNameData dat = new GameNameData()
-                                    {
-                                        OuterFileFullPath = fullPath,
-                                        OuterFileName = Path.GetFileName(fullPath),
-                                        InnerFileName = innerName,
-                                        Title = title,
-                                        Platform = platform
-                                    };
-
-                                    retVal.Add(dat);
-                                }
-                            }
-                            else
-                            {
-                                GameNameData dat = new GameNameData()
-                                {
-                                    OuterFileFullPath = fullPath,
-                                    OuterFileName = Path.GetFileName(fullPath),
-                                    Title = title,
-                                    Platform = platform
-                                };
-
-                                retVal.Add(dat);
-                            }
+                            retVal.Add(dat);
                         }
                     }
                     counter++;

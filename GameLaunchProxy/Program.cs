@@ -147,6 +147,17 @@ namespace GameLaunchProxy
                         steam = true;
                         bigpicture = true;
                     }
+
+                    string gameID = null;
+                    int indexOfGameIDArg = -1;
+                    if ((indexOfGameIDArg = ProxyArgs.IndexOf("-gameid")) > -1)
+                    {
+                        if (ProxyArgs.Count > (indexOfGameIDArg + 1))
+                        {
+                            gameID = ProxyArgs[indexOfGameIDArg + 1].Trim('"');
+                        }
+                    }
+
                     string rom = null;
                     int indexOfRomArg = -1;
                     if ((indexOfRomArg = ProxyArgs.IndexOf("-rom")) > -1)
@@ -211,16 +222,17 @@ namespace GameLaunchProxy
                             }
 
                             List<GameNameData> possibleNameMatches = new List<GameNameData>();
-                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileFullPath != null && dr.OuterFileFullPath == rom).ToList());
-                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && dr.OuterFileName == Path.GetFileName(rom)).ToList());
-                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && dr.InnerFileName == Path.GetFileName(rom)).ToList());
-                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && Path.GetFileNameWithoutExtension(dr.OuterFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
-                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && Path.GetFileNameWithoutExtension(dr.InnerFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
+                            //possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileFullPath != null && dr.OuterFileFullPath == rom).ToList());
+                            //possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && dr.OuterFileName == Path.GetFileName(rom)).ToList());
+                            //possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && dr.InnerFileName == Path.GetFileName(rom)).ToList());
+                            //possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.OuterFileName != null && Path.GetFileNameWithoutExtension(dr.OuterFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
+                            //possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.InnerFileName != null && Path.GetFileNameWithoutExtension(dr.InnerFileName) == Path.GetFileNameWithoutExtension(rom)).ToList());
+                            possibleNameMatches.AddRange(launchbox_names.Where(dr => dr.GUID == gameID));
 
                             LogMessage($"Possible Name Matches:");
                             foreach (GameNameData item in possibleNameMatches)
                             {
-                                LogMessage($"\t{item.Title}\t{item.Platform}\t{item.OuterFileFullPath}\t{item.OuterFileName}\t{item.InnerFileName}");
+                                LogMessage($"\t{item.Title}\t{item.Platform}\t{item.GUID}");
                             }
 
                             GameNameData gameNameData = possibleNameMatches.FirstOrDefault();
@@ -310,7 +322,8 @@ namespace GameLaunchProxy
                         }
 
                         UInt64 steamShortcutId = 0;
-                        try {
+                        try
+                        {
                             for (int x = 0; x < names.Count && steamShortcutId == 0; x++)
                             {
                                 LogMessage($"Searching for item #{x}");
@@ -321,7 +334,8 @@ namespace GameLaunchProxy
 
                                 if (steamShortcutId != 0 && names[x].Item2)
                                 {
-                                    try {
+                                    try
+                                    {
                                         //UInt64 oldSteamShortcutId = steamShortcutId;
                                         //string oldSteamShortcutName = names[x].Item1;
                                         steamShortcutId = SteamContext.GetInstance().RenameLiveShortcut(steamShortcutId, name);
